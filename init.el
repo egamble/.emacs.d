@@ -54,7 +54,12 @@
 
 ;; correctly tab defprotocols, etc
 (custom-set-variables
- '(clojure-mode-use-backtracking-indent t))
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(clojure-mode-use-backtracking-indent t)
+ '(show-paren-mode t))
 
 ;; rainbow parentheses
 (require 'highlight-parentheses)
@@ -96,47 +101,159 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;;tabbar settings
-(require 'tabbar)
-(set-face-attribute 'tabbar-default    nil :background wombat-gray-1 :font "Monaco")
-(set-face-attribute 'tabbar-unselected nil :foreground wombat-bg :box nil)
-(set-face-attribute 'tabbar-selected   nil :background wombat-bg :foreground wombat-gray-1 :box nil)
-(set-face-attribute 'tabbar-highlight  nil :underline t)
-
-(custom-set-variables '(tabbar-separator  '(0)))
-(custom-set-variables '(tabbar-use-images nil))
-
-(tabbar-mode 1)
-(global-set-key [C-right] 'tabbar-forward-tab)
-(global-set-key [C-left] 'tabbar-backward-tab)
-(global-set-key [C-up] 'tabbar-forward-group)
-(global-set-key [C-down] 'tabbar-backward-group)
-
-(defadvice tabbar-buffer-tab-label (after tabbar-tab-label activate)
-  (setq ad-return-value
-        (concat " " (concat (replace-regexp-in-string "<[[:digit:]]+>" "" ad-return-value) " "))))
-
-(defun tabbar-group-buffers-by-dir ()
-  (with-current-buffer (current-buffer)
-    (let ((dir (expand-file-name default-directory)))
-      (cond ((member (buffer-name) '("*Completions*"
-                                     "*scratch*"
-                                     "*Messages*"
-                                     "*Ediff Registry*"))
-             (list "#misc"))
-            ((string-match-p "/.emacs.d/" dir) (list ".emacs.d"))
-            (t (list dir))))))
-
-(setq tabbar-buffer-groups-function 'tabbar-group-buffers-by-dir)
-
-(setq frame-title-format '("%f"))
-
 (eval-after-load 'slime-repl-mode
   '(progn (define-key slime-repl-mode-map (kbd "<C-return>") nil)))
 
-
-;;processing
-(autoload 'processing-mode "processing-mode" "Processing mode" t)
-(add-to-list 'auto-mode-alist '("\\.pde$" . processing-mode))
+;; end of Lance's init.el
 
 
+;; start of Evan's additions
+
+(setq make-backup-files nil)
+
+(global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
+
+(put 'scroll-left 'disabled nil)
+
+(server-start)
+
+(global-set-key (kbd "<f10>") nil)
+(global-set-key (kbd "<f11>") nil)
+(global-set-key (kbd "<f12>") 'other-window)
+
+(global-set-key (kbd "<s-right>") 'other-window)
+(global-set-key (kbd "<s-left>") '(lambda () "backwards other-window" (interactive) (other-window -1)))
+
+(global-set-key (kbd "C-c c") 'toggle-truncate-lines)
+(global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
+
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:height 140 :family "Monaco")))))
+
+(font-lock-add-keywords 'emacs-lisp-mode
+    '(("(\\(lambda\\)\\>" (0 (prog1 ()
+                               (compose-region (match-beginning 1)
+                                               (match-end 1)
+                                               ?λ))))))
+
+(defun lein-swank ()
+  (interactive)
+  (let ((root (locate-dominating-file default-directory "project.clj")))
+    (when (not root)
+      (error "Not in a Leiningen project."))
+    ;; you can customize slime-port using .dir-locals.el
+    (shell-command (format "source ~/.bashrc && cd %s && lein swank %s &" root slime-port)
+                   "*lein-swank*")
+    (set-process-filter (get-buffer-process "*lein-swank*")
+                        (lambda (process output)
+                          (when (string-match "Connection opened on" output)
+                            (slime-connect "localhost" slime-port)
+                            (set-process-filter process nil))))
+    (message "Starting swank server...")))
+
+(defun kill-lein-swank ()
+  (interactive)
+  (kill-process (get-buffer-process "*lein-swank*"))
+  (message "Stopping swank server..."))
+
+(global-set-key (kbd "s-=") 'lein-swank)
+(global-set-key (kbd "s-+") 'kill-lein-swank)
+
+(fset 'slime-repl-set-default-package
+  [?\C-c ?\M-p return])
+
+(defun slime-set-default-package-switch-to-repl ()
+  (interactive)
+  (execute-kbd-macro 'slime-repl-set-default-package)
+  (slime-switch-to-output-buffer)
+  (insert "(use 'clojure.repl)")
+  (slime-repl-return))
+
+(defun slime-save-compile-and-load-file ()
+  (interactive)
+  (save-buffer)
+  (slime-compile-and-load-file))
+
+(defun slime-save-compile-defun ()
+  (interactive)
+  (save-buffer)
+  (slime-compile-defun)
+  (slime-switch-to-output-buffer))
+
+(defun slime-custom-keys ()
+  (define-key slime-mode-map (kbd "C-c C-k") 'slime-save-compile-and-load-file)
+  (define-key slime-mode-map (kbd "C-c C-c") 'slime-save-compile-defun)
+  (define-key slime-mode-map (kbd "C-c C-n") 'slime-set-default-package-switch-to-repl))
+
+(add-hook 'slime-mode-hook 'slime-custom-keys)
+
+(defun slime-custom-repl-keys ()
+  (define-key slime-repl-mode-map (kbd "<s-up>") 'slime-repl-backward-input)
+  (define-key slime-repl-mode-map (kbd "<s-down>") 'slime-repl-forward-input))
+
+(add-hook 'slime-repl-mode-hook 'slime-custom-repl-keys)
+
+(defun squeeze-whitespace ()
+  "Squeeze white space (including new lines) between objects around point.
+Leave one space or none, according to the context."
+  (interactive "*")
+  (skip-chars-backward " \t\r\n\f")
+  (set-mark (point))
+  (skip-chars-forward " \t\r\n\f")
+  (kill-region (point) (mark))
+  (insert ?\s)
+  (fixup-whitespace))
+
+(global-set-key (kbd "s-6") 'squeeze-whitespace)
+
+(defun insert-line-numbers (beg end &optional start-line)
+  "Insert line numbers into buffer."
+  (interactive "r")
+  (save-excursion
+    (let ((max (count-lines beg end))
+          (line (or start-line 1))
+          (counter 1))
+      (goto-char beg)
+      (while (<= counter max)
+        (insert (format "%0d	" line))
+        (beginning-of-line 2)
+        (incf line)
+        (incf counter)))))
+
+(defun insert-line-numbers+ ()
+  "Insert line numbers into buffer."
+  (interactive)
+  (if mark-active
+      (insert-line-number (region-beginning) (region-end) (read-number "Start line: "))
+    (insert-line-number (point-min) (point-max))))
+
+(defun strip-blank-lines ()
+  "Strip blank lines in region.
+   If no region strip all blank lines in current buffer."
+  (interactive)
+  (strip-regular-expression-string "^[ \t]*\n"))
+
+(defun strip-line-numbers ()
+  "Strip line numbers in region.
+   If no region strip all the line numbers in current buffer."
+  (interactive)
+  (strip-regular-expression-string "^[0-9]+[ \t]?"))
+
+(defun strip-regular-expression-string (regex)
+  "Strip all strings that match regex in region.
+   If no region strip current buffer."
+  (interactive)
+  (let ((begin (point-min))
+        (end (point-max)))
+    (if mark-active
+        (setq begin (region-beginning)
+              end (region-end)))
+    (save-excursion
+      (goto-char end)
+      (while (and (> (point) begin)
+                  (re-search-backward regex nil t))
+        (replace-match "" t t)))))
