@@ -7,7 +7,7 @@
 (setq default-tab-width 2)
 (setq-default indent-tabs-mode nil)
 
-;; add all subdirs of ~/.emcas.d to your load-path
+;; add all subdirs of ~/.emacs.d to your load-path
 (dolist (f (file-expand-wildcards "~/.emacs.d/*"))
   (add-to-list 'load-path f))
 
@@ -139,6 +139,8 @@
                                (compose-region (match-beginning 1)
                                                (match-end 1)
                                                ?λ))))))
+
+(setq slime-net-coding-system 'utf-8-unix)
 
 (defun lein-swank ()
   (interactive)
