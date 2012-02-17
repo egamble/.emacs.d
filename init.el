@@ -259,3 +259,6 @@ Leave one space or none, according to the context."
       (while (and (> (point) begin)
                   (re-search-backward regex nil t))
         (replace-match "" t t)))))
+
+(define-clojure-indent
+  (let? 1))
