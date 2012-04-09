@@ -7,6 +7,16 @@
 (setq default-tab-width 2)
 (setq-default indent-tabs-mode nil)
 
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))
+
 ;; add all subdirs of ~/.emacs.d to your load-path
 (dolist (f (file-expand-wildcards "~/.emacs.d/*"))
   (add-to-list 'load-path f))
@@ -134,11 +144,33 @@
   ;; If there is more than one, they won't work right.
  '(default ((t (:height 140 :family "Monaco")))))
 
+;; enable awesome file prompting
+(when (> emacs-major-version 21)
+  (ido-mode t)
+  (setq ido-enable-prefix nil
+        ido-enable-flex-matching t
+        ido-create-new-buffer 'always
+        ido-use-filename-at-point t
+        ido-max-prospects 10))
+
+;; https://github.com/nonsequitur/smex/
+;; smex: ido for M-x
+(require 'smex)
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;; This is your old M-x.
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
+;; display pretty lambdas
 (font-lock-add-keywords 'emacs-lisp-mode
     '(("(\\(lambda\\)\\>" (0 (prog1 ()
                                (compose-region (match-beginning 1)
                                                (match-end 1)
                                                ?λ))))))
+
+;; turn off scroll-bars
+(scroll-bar-mode -1)
 
 (setq slime-net-coding-system 'utf-8-unix)
 
