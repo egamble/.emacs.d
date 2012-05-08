@@ -43,7 +43,7 @@
 ;; load slime
 (eval-after-load "slime"
   '(progn (slime-setup '(slime-repl))
-          '(setq slime-protocol-version 'ignore)))
+          (setq slime-protocol-version 'ignore)))
 
 (require 'slime)
 (require 'slime-repl)
