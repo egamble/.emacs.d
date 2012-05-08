@@ -1,4 +1,4 @@
-This is forked from git://github.com/lancepantz/.emacs.d.git, lancepantz' personal emacs config set up primarily for clojure and ruby. Intended for pure emacs and its gui installs. Submodules are used when available. This includes paredit, rainbow parens, and others.
+This is forked and extended from git://github.com/lancepantz/.emacs.d.git, lancepantz' personal emacs config.
 
 ## Installation
 1. backup ~/.emacs.d if there is anything you wish to keep
