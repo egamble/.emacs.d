@@ -30,8 +30,8 @@
 (color-theme-wombat)
 
 ;; default frame size
-(add-to-list 'default-frame-alist (cons 'height 24))
-(add-to-list 'default-frame-alist (cons 'width 80))
+;(add-to-list 'default-frame-alist (cons 'height 24))
+;(add-to-list 'default-frame-alist (cons 'width 80))
 (add-to-list 'default-frame-alist '(alpha 85 75))
 
 ;; f5
@@ -42,9 +42,8 @@
 
 ;; load slime
 (eval-after-load "slime"
-  '(progn (slime-setup '(slime-repl))))
-(eval-after-load "slime"
-  '(setq slime-protocol-version 'ignore))
+  '(progn (slime-setup '(slime-repl))
+          '(setq slime-protocol-version 'ignore)))
 
 (require 'slime)
 (require 'slime-repl)
@@ -56,27 +55,30 @@
 
 ;; load paredit
 (require 'paredit)
-(add-hook 'clojure-mode-hook          (lambda () (paredit-mode +1)))
-(add-hook 'emacs-lisp-mode-hook       (lambda () (paredit-mode +1)))
-(add-hook 'lisp-mode-hook             (lambda () (paredit-mode +1)))
-(add-hook 'scheme-mode-hook           (lambda () (paredit-mode +1)))
-(add-hook 'lisp-interaction-mode-hook (lambda () (paredit-mode -1)))
+(dolist (mode '(clojure emacs-lisp lisp scheme lisp-interaction))
+  (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
+            (lambda ()
+            (paredit-mode 1)
+            (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp)
+;;            (auto-complete-mode 1)
+)))
 
 ;; correctly tab defprotocols, etc
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(clojure-mode-use-backtracking-indent t)
- '(show-paren-mode t))
+
+;; (custom-set-variables
+;;  ;; custom-set-variables was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(clojure-mode-use-backtracking-indent t)
+;;  '(show-paren-mode t))
 
 ;; rainbow parentheses
 (require 'highlight-parentheses)
 (add-hook 'clojure-mode-hook '(lambda () (highlight-parentheses-mode 1)))
 (setq hl-paren-colors
       '("orange1" "yellow1" "greenyellow" "green1"
-	"springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
+        "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
 
 ;; magic, haven't broken this down yet
 (defmacro defclojureface (name color desc &optional others)
@@ -109,10 +111,40 @@
 (global-set-key (kbd "C-.")        'kmacro-end-or-call-macro)
 (global-set-key (kbd "<C-return>") 'apply-macro-to-region-lines)
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook 'whitespace-cleanup)
+
+(setq frame-title-format '("%f"))
 
 (eval-after-load 'slime-repl-mode
   '(progn (define-key slime-repl-mode-map (kbd "<C-return>") nil)))
+
+(defun smart-line-beginning ()
+  "Move point to the beginning of text
+on the current line; if that is already
+the current position of point, then move
+it to the beginning of the line."
+  (interactive)
+  (let ((pt (point)))
+    (beginning-of-line-text)
+    (when (eq pt (point))
+      (beginning-of-line))))
+
+(global-set-key "\C-a" 'smart-line-beginning)
+
+;; auto-complete-mode
+(require 'auto-complete-config)
+(ac-config-default)
+
+;; slime auto complete
+(require 'ac-slime)
+(add-hook 'slime-mode-hook 'set-up-slime-ac)
+
+;; fix indenting in repl
+(add-hook 'slime-repl-mode-hook
+          (lambda ()
+            (define-key slime-repl-mode-map (kbd "<C-return>") nil)
+            (setq lisp-indent-function 'clojure-indent-function)
+            (set-syntax-table clojure-mode-syntax-table)))
 
 ;; end of Lance's init.el
 
