@@ -326,3 +326,14 @@ Leave one space or none, according to the context."
 
 (define-clojure-indent
   (let? 1))
+
+(global-set-key (kbd "<s-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<s-wheel-down>") 'text-scale-decrease)
+
+(defun find-init-file ()
+  "Visit init.el."
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+
+(global-set-key (kbd "s-i") 'find-init-file)
+(global-set-key (kbd "s-I") 'eval-buffer)
