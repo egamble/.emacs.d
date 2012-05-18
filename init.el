@@ -337,3 +337,5 @@ Leave one space or none, according to the context."
 
 (global-set-key (kbd "s-i") 'find-init-file)
 (global-set-key (kbd "s-I") 'eval-buffer)
+
+(setq font-lock-verbose nil)
