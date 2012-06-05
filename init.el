@@ -344,3 +344,5 @@ Leave one space or none, according to the context."
 (global-set-key (kbd "s-}") 'enlarge-window-horizontally)
 (global-set-key (kbd "s-[") 'shrink-window)
 (global-set-key (kbd "s-]") 'enlarge-window)
+
+(setq column-number-mode t)
