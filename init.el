@@ -294,8 +294,8 @@ Leave one space or none, according to the context."
   "Insert line numbers into buffer."
   (interactive)
   (if mark-active
-      (insert-line-number (region-beginning) (region-end) (read-number "Start line: "))
-    (insert-line-number (point-min) (point-max))))
+      (insert-line-numbers (region-beginning) (region-end) (read-number "Start line: "))
+    (insert-line-numbers (point-min) (point-max))))
 
 (defun strip-blank-lines ()
   "Strip blank lines in region.
