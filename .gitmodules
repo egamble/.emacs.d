@@ -13,3 +13,6 @@
 [submodule "popup-el"]
 	path = popup-el
 	url = https://github.com/m2ym/popup-el.git
+[submodule "ace-jump"]
+	path = ace-jump
+	url = https://github.com/winterTTr/ace-jump-mode.git

@@ -347,3 +347,6 @@ Leave one space or none, according to the context."
 
 ;; show column numbers
 (setq column-number-mode t)
+
+(require 'ace-jump-mode)
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
