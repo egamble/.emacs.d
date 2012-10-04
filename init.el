@@ -349,5 +349,9 @@ Leave one space or none, according to the context."
 (setq column-number-mode t)
 
 (require 'ace-jump-mode)
+;; C-c SPC and C-c C-SPC are ace-jump-word-mode
+;; C-u C-c SPC and C-u C-c C-SPC and s-SPC are ace-jump-char-mode
+;; C-u C-u C-c SPC and C-u C-u C-c C-SPC are ace-jump-line-mode
 (define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
 (define-key global-map (kbd "C-c C-SPC") 'ace-jump-mode)
+(define-key global-map (kbd "s-SPC") 'ace-jump-char-mode)
