@@ -1,11 +1,76 @@
+;; allow emacsclient to open files in a running emacs
+(server-start)
+
 ;; turn off emacs startup message
 (setq inhibit-startup-message t)
+
+(setq frame-title-format '("%f"))
+
+;; make transparent if the window manager supports it
+(add-to-list 'default-frame-alist '(alpha 85 75))
+
 ;; do not wrap lines
 (setq-default truncate-lines t)
 
 ;; tab width as two, using spaces
 (setq default-tab-width 2)
 (setq-default indent-tabs-mode nil)
+
+;; show column numbers
+(setq column-number-mode t)
+
+;; turn off scroll-bars
+(scroll-bar-mode -1)
+
+(put 'scroll-left 'disabled nil)
+
+;; personally, I can do without all those ~ files
+(setq make-backup-files nil)
+
+;; surprisingly, this dramatically speeds up Clojure compilation via slime
+(setq font-lock-verbose nil)
+
+(add-hook 'before-save-hook 'whitespace-cleanup)
+
+;; probably OS X specific
+(global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
+
+(global-set-key [f5] 'revert-buffer)
+(global-set-key [f12] 'other-window)
+
+(global-set-key (kbd "<s-right>") 'other-window)
+(global-set-key (kbd "<s-left>") '(lambda () "backwards other-window" (interactive) (other-window -1)))
+
+(global-set-key (kbd "C-c c") 'toggle-truncate-lines)
+(global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
+
+;; keyboard macro key bindings
+(global-set-key (kbd "C-,")        'kmacro-start-macro-or-insert-counter)
+(global-set-key (kbd "C-.")        'kmacro-end-or-call-macro)
+(global-set-key (kbd "<C-return>") 'apply-macro-to-region-lines)
+
+(global-set-key (kbd "<s-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<s-wheel-down>") 'text-scale-decrease)
+
+(defun find-init-file ()
+  "Visit init.el."
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+
+(global-set-key (kbd "s-i") 'find-init-file)
+(global-set-key (kbd "s-I") 'eval-buffer)
+
+(global-set-key (kbd "s-{") 'shrink-window-horizontally)
+(global-set-key (kbd "s-}") 'enlarge-window-horizontally)
+(global-set-key (kbd "s-[") 'shrink-window)
+(global-set-key (kbd "s-]") 'enlarge-window)
+
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:height 140 :family "Monaco")))))
 
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
@@ -29,17 +94,6 @@
 (load-file "~/.emacs.d/color-theme/themes/wombat.el")
 (color-theme-wombat)
 
-;; default frame size
-;(add-to-list 'default-frame-alist (cons 'height 24))
-;(add-to-list 'default-frame-alist (cons 'width 80))
-(add-to-list 'default-frame-alist '(alpha 85 75))
-
-;; f5
-(global-set-key [f5] 'revert-buffer)
-
-;; load clojure mode
-(require 'clojure-mode)
-
 ;; load slime
 (eval-after-load "slime"
   '(progn (slime-setup '(slime-repl))
@@ -47,6 +101,16 @@
 
 (require 'slime)
 (require 'slime-repl)
+
+;; printing strings in slime with unusual characters crashes without this
+(setq slime-net-coding-system 'utf-8-unix)
+
+;; load clojure mode
+(require 'clojure-mode)
+
+;; indent let? the same as let
+(define-clojure-indent
+  (let? 1))
 
 ;; load clojure test mode
 (autoload 'clojure-test-mode "clojure-test-mode" "Clojure test mode" t)
@@ -59,19 +123,7 @@
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
             (paredit-mode 1)
-            (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp)
-;;            (auto-complete-mode 1)
-)))
-
-;; correctly tab defprotocols, etc
-
-;; (custom-set-variables
-;;  ;; custom-set-variables was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(clojure-mode-use-backtracking-indent t)
-;;  '(show-paren-mode t))
+            (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp))))
 
 ;; rainbow parentheses
 (require 'highlight-parentheses)
@@ -106,15 +158,6 @@
 
 (add-hook 'clojure-mode-hook 'tweak-clojure-syntax)
 
-;;macros
-(global-set-key (kbd "C-,")        'kmacro-start-macro-or-insert-counter)
-(global-set-key (kbd "C-.")        'kmacro-end-or-call-macro)
-(global-set-key (kbd "<C-return>") 'apply-macro-to-region-lines)
-
-(add-hook 'before-save-hook 'whitespace-cleanup)
-
-(setq frame-title-format '("%f"))
-
 (eval-after-load 'slime-repl-mode
   '(progn (define-key slime-repl-mode-map (kbd "<C-return>") nil)))
 
@@ -146,36 +189,6 @@ it to the beginning of the line."
             (setq lisp-indent-function 'clojure-indent-function)
             (set-syntax-table clojure-mode-syntax-table)))
 
-;; end of Lance's init.el
-
-
-;; start of Evan's additions
-
-(setq make-backup-files nil)
-
-(global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
-
-(put 'scroll-left 'disabled nil)
-
-(server-start)
-
-(global-set-key (kbd "<f10>") nil)
-(global-set-key (kbd "<f11>") nil)
-(global-set-key (kbd "<f12>") 'other-window)
-
-(global-set-key (kbd "<s-right>") 'other-window)
-(global-set-key (kbd "<s-left>") '(lambda () "backwards other-window" (interactive) (other-window -1)))
-
-(global-set-key (kbd "C-c c") 'toggle-truncate-lines)
-(global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
-
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(default ((t (:height 140 :family "Monaco")))))
-
 ;; enable awesome file prompting
 (when (> emacs-major-version 21)
   (ido-mode t)
@@ -200,11 +213,6 @@ it to the beginning of the line."
                                (compose-region (match-beginning 1)
                                                (match-end 1)
                                                ?λ))))))
-
-;; turn off scroll-bars
-(scroll-bar-mode -1)
-
-(setq slime-net-coding-system 'utf-8-unix)
 
 (defun lein-swank ()
   (interactive)
@@ -324,34 +332,10 @@ Leave one space or none, according to the context."
                   (re-search-backward regex nil t))
         (replace-match "" t t)))))
 
-(define-clojure-indent
-  (let? 1))
-
-(global-set-key (kbd "<s-wheel-up>") 'text-scale-increase)
-(global-set-key (kbd "<s-wheel-down>") 'text-scale-decrease)
-
-(defun find-init-file ()
-  "Visit init.el."
-  (interactive)
-  (find-file "~/.emacs.d/init.el"))
-
-(global-set-key (kbd "s-i") 'find-init-file)
-(global-set-key (kbd "s-I") 'eval-buffer)
-
-(setq font-lock-verbose nil)
-
-(global-set-key (kbd "s-{") 'shrink-window-horizontally)
-(global-set-key (kbd "s-}") 'enlarge-window-horizontally)
-(global-set-key (kbd "s-[") 'shrink-window)
-(global-set-key (kbd "s-]") 'enlarge-window)
-
-;; show column numbers
-(setq column-number-mode t)
-
 (require 'ace-jump-mode)
 ;; C-c SPC and C-c C-SPC are ace-jump-word-mode
 ;; C-u C-c SPC and C-u C-c C-SPC and s-SPC are ace-jump-char-mode
 ;; C-u C-u C-c SPC and C-u C-u C-c C-SPC are ace-jump-line-mode
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
-(define-key global-map (kbd "C-c C-SPC") 'ace-jump-mode)
-(define-key global-map (kbd "s-SPC") 'ace-jump-char-mode)
+(global-set-key (kbd "C-c SPC") 'ace-jump-mode)
+(global-set-key (kbd "C-c C-SPC") 'ace-jump-mode)
+(global-set-key (kbd "s-SPC") 'ace-jump-char-mode)
