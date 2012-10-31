@@ -32,6 +32,8 @@
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
+(winner-mode 1)
+
 ;; probably OS X specific
 (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
 
