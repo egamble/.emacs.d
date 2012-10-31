@@ -32,6 +32,7 @@
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
+;; undo/redo pane configuration with C-c left/right arrow
 (winner-mode 1)
 
 ;; probably OS X specific
