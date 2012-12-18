@@ -122,11 +122,32 @@
 
 ;; load paredit
 (require 'paredit)
+
+(defun forward-select-sexp ()
+  "Select sexp after point."
+  (interactive)
+  ;; skip comments
+  (forward-sexp)
+  (backward-sexp)
+  (set-mark (point))
+  (forward-sexp))
+
+(defun backward-select-sexp ()
+  "Select sexp before point."
+  (interactive)
+  ;; skip comments
+  (backward-sexp)
+  (forward-sexp)
+  (set-mark (point))
+  (backward-sexp))
+
 (dolist (mode '(clojure emacs-lisp lisp scheme lisp-interaction))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
             (paredit-mode 1)
-            (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp))))
+            (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp)
+            (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
+            (local-set-key (kbd "<C-M-s-left>") 'backward-select-sexp))))
 
 ;; rainbow parentheses
 (require 'highlight-parentheses)
