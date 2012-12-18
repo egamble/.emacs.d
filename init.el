@@ -127,19 +127,19 @@
   "Select sexp after point."
   (interactive)
   ;; skip comments
-  (forward-sexp)
-  (backward-sexp)
+  (paredit-forward)
+  (paredit-backward)
   (set-mark (point))
-  (forward-sexp))
+  (paredit-forward))
 
 (defun backward-select-sexp ()
   "Select sexp before point."
   (interactive)
   ;; skip comments
-  (backward-sexp)
-  (forward-sexp)
+  (paredit-backward)
+  (paredit-forward)
   (set-mark (point))
-  (backward-sexp))
+  (paredit-backward))
 
 (dolist (mode '(clojure emacs-lisp lisp scheme lisp-interaction))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
