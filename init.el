@@ -73,7 +73,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:height 140 :family "Monaco")))))
+ '(default ((t (:height 140)))))
 
 ;;; This was installed by package-install.el.
 ;;; This provides support for the package system and
@@ -209,7 +209,6 @@ it to the beginning of the line."
 ;; fix indenting in repl
 (add-hook 'slime-repl-mode-hook
           (lambda ()
-            (define-key slime-repl-mode-map (kbd "<C-return>") nil)
             (setq lisp-indent-function 'clojure-indent-function)
             (set-syntax-table clojure-mode-syntax-table)))
 
