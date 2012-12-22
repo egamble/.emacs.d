@@ -75,16 +75,6 @@
   ;; If there is more than one, they won't work right.
  '(default ((t (:height 140)))))
 
-;;; This was installed by package-install.el.
-;;; This provides support for the package system and
-;;; interfacing with ELPA, the package archive.
-;;; Move this code earlier if you want to reference
-;;; packages in your .emacs.
-(when
-    (load
-     (expand-file-name "~/.emacs.d/elpa/package.el"))
-  (package-initialize))
-
 ;; add all subdirs of ~/.emacs.d to your load-path
 (dolist (f (file-expand-wildcards "~/.emacs.d/*"))
   (add-to-list 'load-path f))
@@ -221,7 +211,6 @@ it to the beginning of the line."
         ido-use-filename-at-point t
         ido-max-prospects 10))
 
-;; https://github.com/nonsequitur/smex/
 ;; smex: ido for M-x
 (require 'smex)
 (smex-initialize)
@@ -324,54 +313,6 @@ Leave one space or none, according to the context."
   (fixup-whitespace))
 
 (global-set-key (kbd "s-6") 'squeeze-whitespace)
-
-(defun insert-line-numbers (beg end &optional start-line)
-  "Insert line numbers into buffer."
-  (interactive "r")
-  (save-excursion
-    (let ((max (count-lines beg end))
-          (line (or start-line 1))
-          (counter 1))
-      (goto-char beg)
-      (while (<= counter max)
-        (insert (format "%0d	" line))
-        (beginning-of-line 2)
-        (incf line)
-        (incf counter)))))
-
-(defun insert-line-numbers+ ()
-  "Insert line numbers into buffer."
-  (interactive)
-  (if mark-active
-      (insert-line-numbers (region-beginning) (region-end) (read-number "Start line: "))
-    (insert-line-numbers (point-min) (point-max))))
-
-(defun strip-blank-lines ()
-  "Strip blank lines in region.
-   If no region strip all blank lines in current buffer."
-  (interactive)
-  (strip-regular-expression-string "^[ \t]*\n"))
-
-(defun strip-line-numbers ()
-  "Strip line numbers in region.
-   If no region strip all the line numbers in current buffer."
-  (interactive)
-  (strip-regular-expression-string "^[0-9]+[ \t]?"))
-
-(defun strip-regular-expression-string (regex)
-  "Strip all strings that match regex in region.
-   If no region strip current buffer."
-  (interactive)
-  (let ((begin (point-min))
-        (end (point-max)))
-    (if mark-active
-        (setq begin (region-beginning)
-              end (region-end)))
-    (save-excursion
-      (goto-char end)
-      (while (and (> (point) begin)
-                  (re-search-backward regex nil t))
-        (replace-match "" t t)))))
 
 (require 'ace-jump-mode)
 ;; C-c SPC and C-c C-SPC are ace-jump-word-mode
