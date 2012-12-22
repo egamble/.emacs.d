@@ -1,13 +1,13 @@
-;; allow emacsclient to open files in a running emacs
-(server-start)
-
 ;; turn off emacs startup message
 (setq inhibit-startup-message t)
 
-(setq frame-title-format '("%f"))
-
 ;; make transparent if the window manager supports it
 (add-to-list 'default-frame-alist '(alpha 85 75))
+
+(setq frame-title-format '("%f"))
+
+;; allow emacsclient to open files in a running emacs
+(server-start)
 
 ;; do not wrap lines
 (setq-default truncate-lines t)
@@ -50,7 +50,6 @@
 ;; keyboard macro key bindings
 (global-set-key (kbd "C-,")        'kmacro-start-macro-or-insert-counter)
 (global-set-key (kbd "C-.")        'kmacro-end-or-call-macro)
-(global-set-key (kbd "<C-return>") 'apply-macro-to-region-lines)
 
 (global-set-key (kbd "<s-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<s-wheel-down>") 'text-scale-decrease)
@@ -172,9 +171,6 @@
 
 (add-hook 'clojure-mode-hook 'tweak-clojure-syntax)
 
-(eval-after-load 'slime-repl-mode
-  '(progn (define-key slime-repl-mode-map (kbd "<C-return>") nil)))
-
 (defun smart-line-beginning ()
   "Move point to the beginning of text
 on the current line; if that is already
@@ -203,13 +199,12 @@ it to the beginning of the line."
             (set-syntax-table clojure-mode-syntax-table)))
 
 ;; enable awesome file prompting
-(when (> emacs-major-version 21)
-  (ido-mode t)
-  (setq ido-enable-prefix nil
-        ido-enable-flex-matching t
-        ido-create-new-buffer 'always
-        ido-use-filename-at-point t
-        ido-max-prospects 10))
+(ido-mode t)
+(setq ido-enable-prefix nil
+      ido-enable-flex-matching t
+      ido-create-new-buffer 'always
+      ido-use-filename-at-point t
+      ido-max-prospects 10)
 
 ;; smex: ido for M-x
 (require 'smex)
@@ -227,7 +222,6 @@ it to the beginning of the line."
                                                ?λ))))))
 
 (defun ensure-three-windows ()
-  (interactive)
   (let ((c (length (window-list))))
     (cond ((eq c 1) (progn (split-window-horizontally)
                            (ensure-three-windows)))
@@ -240,6 +234,8 @@ it to the beginning of the line."
 
   (ensure-three-windows)
 
+  ;; Ensure *slime-repl clojure* is visible, so the current .clj buffer stays selected,
+  ;; because the next thing is usually to compile the .clj buffer.
   (let* ((ls (display-buffer (get-buffer-create "*lein-swank*")))
          (ls-flag (window-dedicated-p ls)))
     (set-window-dedicated-p ls t)
