@@ -237,8 +237,26 @@ it to the beginning of the line."
                                                (match-end 1)
                                                ?λ))))))
 
+(defun ensure-three-windows ()
+  (interactive)
+  (let ((c (length (window-list))))
+    (cond ((eq c 1) (progn (split-window-horizontally)
+                           (ensure-three-windows)))
+          ((eq c 2) (progn (other-window 1)
+                           (split-window-vertically)
+                           (other-window -1))))))
+
 (defun lein-swank ()
   (interactive)
+
+  (ensure-three-windows)
+
+  (let* ((ls (display-buffer (get-buffer-create "*lein-swank*")))
+         (ls-flag (window-dedicated-p ls)))
+    (set-window-dedicated-p ls t)
+    (display-buffer (get-buffer-create "*slime-repl clojure*"))
+    (set-window-dedicated-p ls ls-flag))
+
   (let ((root (locate-dominating-file default-directory "project.clj")))
     (when (not root)
       (error "Not in a Leiningen project."))
