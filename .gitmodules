@@ -1,18 +1,18 @@
 [submodule "slime"]
-	path = slime
-	url = http://github.com/nablaone/slime.git
+  path = slime
+  url = http://github.com/nablaone/slime.git
 [submodule "ac-slime"]
-	path = ac-slime
-	url = https://github.com/purcell/ac-slime.git
+  path = ac-slime
+  url = https://github.com/purcell/ac-slime.git
 [submodule "auto-complete"]
-	path = auto-complete
-	url = https://github.com/m2ym/auto-complete.git
+  path = auto-complete
+  url = https://github.com/auto-complete/auto-complete.git
 [submodule "clojure-mode"]
-	path = clojure-mode
-	url = https://github.com/technomancy/clojure-mode.git
+  path = clojure-mode
+  url = https://github.com/technomancy/clojure-mode.git
 [submodule "popup-el"]
-	path = popup-el
-	url = https://github.com/m2ym/popup-el.git
+  path = popup-el
+  url = https://github.com/m2ym/popup-el.git
 [submodule "ace-jump"]
-	path = ace-jump
-	url = https://github.com/winterTTr/ace-jump-mode.git
+  path = ace-jump
+  url = https://github.com/winterTTr/ace-jump-mode.git
