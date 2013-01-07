@@ -9,6 +9,8 @@
 ;; allow emacsclient to open files in a running emacs
 (server-start)
 
+(setq uname (shell-command "uname"))
+
 ;; do not wrap lines
 (setq-default truncate-lines t)
 
@@ -109,8 +111,14 @@
 (autoload 'clojure-test-maybe-enable "clojure-test-mode" "" t)
 (add-hook 'clojure-mode-hook 'clojure-test-maybe-enable)
 
-;; load paredit
 (require 'paredit)
+
+;; Toggle fold-dwim-org mode with C-tab.
+;; While fold-dwim-org mode is enabled:
+;;  tab shows/hides block,
+;;  S-tab shows/hides all blocks.
+(require 'fold-dwim-org)
+(global-set-key (kbd "<C-tab>") 'fold-dwim-org/minor-mode)
 
 (defun forward-select-sexp ()
   "Select sexp after point."
@@ -134,6 +142,7 @@
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
             (paredit-mode 1)
+            (hs-minor-mode 1)
             (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp)
             (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
             (local-set-key (kbd "<C-M-s-left>") 'backward-select-sexp))))
@@ -145,7 +154,6 @@
       '("orange1" "yellow1" "greenyellow" "green1"
         "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
 
-;; magic, haven't broken this down yet
 (defmacro defclojureface (name color desc &optional others)
   `(defface ,name '((((class color)) (:foreground ,color ,@others))) ,desc :group 'faces))
 
