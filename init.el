@@ -97,25 +97,20 @@
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
-(unless (package-installed-p 'clojure-mode)
-  (package-refresh-contents)
-  (package-install 'clojure-mode))
+(let (refreshed)
+  (dolist (package '(clojure-mode clojure-test-mode nrepl))
+    (unless (package-installed-p package)
+      (when (not refreshed)
+        (package-refresh-contents)
+        (setq refreshed t))
+      (package-install package))))
 
 ;; load clojure mode
 (require 'clojure-mode)
 
-(unless (package-installed-p 'nrepl)
-  (package-refresh-contents)
-  (package-install 'nrepl))
-
 ;; indent let? the same as let
 (define-clojure-indent
   (let? 1))
-
-;; load clojure test mode
-;(autoload 'clojure-test-mode "clojure-test-mode" "Clojure test mode" t)
-;(autoload 'clojure-test-maybe-enable "clojure-test-mode" "" t)
-;(add-hook 'clojure-mode-hook 'clojure-test-maybe-enable)
 
 (require 'paredit)
 
@@ -264,7 +259,7 @@ it to the beginning of the line."
 ;;   (interactive)
 ;;   (execute-kbd-macro 'slime-repl-set-default-package)
 ;;   (slime-switch-to-output-buffer)
-;;   (insert "(use 'clojure.repl)")
+;;   (insert "(use 'clojure.repl)") ; won't need this for nrepl
 ;;   (slime-repl-return))
 
 ;; (defun slime-save-compile-and-load-file ()
