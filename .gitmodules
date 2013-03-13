@@ -1,15 +1,9 @@
-[submodule "ac-slime"]
-  path = ac-slime
-  url = https://github.com/purcell/ac-slime.git
 [submodule "auto-complete"]
   path = auto-complete
   url = https://github.com/auto-complete/auto-complete.git
 [submodule "popup-el"]
   path = popup-el
   url = https://github.com/auto-complete/popup-el.git
-[submodule "clojure-mode"]
-  path = clojure-mode
-  url = https://github.com/technomancy/clojure-mode.git
 [submodule "ace-jump"]
   path = ace-jump
   url = https://github.com/winterTTr/ace-jump-mode.git
@@ -17,8 +11,8 @@
   path = smex
   url = https://github.com/nonsequitur/smex.git
 [submodule "fold-dwim-org"]
-	path = fold-dwim-org
-	url = git@github.com:emacsmirror/fold-dwim-org.git
+  path = fold-dwim-org
+  url = git@github.com:emacsmirror/fold-dwim-org.git
 [submodule "fold-dwim"]
-	path = fold-dwim
-	url = git@github.com:emacsmirror/fold-dwim.git
+  path = fold-dwim
+  url = git@github.com:emacsmirror/fold-dwim.git

@@ -88,28 +88,34 @@
 (load-file "~/.emacs.d/color-theme/themes/wombat.el")
 (color-theme-wombat)
 
-;; load slime
-(eval-after-load "slime"
-  '(progn (slime-setup '(slime-repl))
-          (setq slime-protocol-version 'ignore)))
-
-(require 'slime)
-(require 'slime-repl)
-
+;; TODO: is something similar to this hack needed for nrepl?
 ;; printing strings in slime with unusual characters crashes without this
-(setq slime-net-coding-system 'utf-8-unix)
+;;(setq slime-net-coding-system 'utf-8-unix)
+
+(require 'package)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
+
+(unless (package-installed-p 'clojure-mode)
+  (package-refresh-contents)
+  (package-install 'clojure-mode))
 
 ;; load clojure mode
 (require 'clojure-mode)
+
+(unless (package-installed-p 'nrepl)
+  (package-refresh-contents)
+  (package-install 'nrepl))
 
 ;; indent let? the same as let
 (define-clojure-indent
   (let? 1))
 
 ;; load clojure test mode
-(autoload 'clojure-test-mode "clojure-test-mode" "Clojure test mode" t)
-(autoload 'clojure-test-maybe-enable "clojure-test-mode" "" t)
-(add-hook 'clojure-mode-hook 'clojure-test-maybe-enable)
+;(autoload 'clojure-test-mode "clojure-test-mode" "Clojure test mode" t)
+;(autoload 'clojure-test-maybe-enable "clojure-test-mode" "" t)
+;(add-hook 'clojure-mode-hook 'clojure-test-maybe-enable)
 
 (require 'paredit)
 
@@ -119,6 +125,10 @@
 ;;  S-tab shows/hides all blocks.
 (require 'fold-dwim-org)
 (global-set-key (kbd "<C-tab>") 'fold-dwim-org/minor-mode)
+
+;; supports fold-dwim-org
+;; add separately from other lispish mode hooks because it messes up the nrepl buffer
+(add-hook 'clojure-mode-hook 'hs-minor-mode)
 
 (defun forward-select-sexp ()
   "Select sexp after point."
@@ -138,21 +148,22 @@
   (set-mark (point))
   (paredit-backward))
 
-(dolist (mode '(clojure emacs-lisp lisp scheme lisp-interaction))
-  (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
-            (lambda ()
-            (paredit-mode 1)
-            (hs-minor-mode 1)
-            (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp)
-            (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
-            (local-set-key (kbd "<C-M-s-left>") 'backward-select-sexp))))
-
 ;; rainbow parentheses
 (require 'highlight-parentheses)
 (add-hook 'clojure-mode-hook '(lambda () (highlight-parentheses-mode 1)))
-(setq hl-paren-colors
-      '("orange1" "yellow1" "greenyellow" "green1"
-        "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
+ (setq hl-paren-colors
+       '("orange1" "yellow1" "greenyellow" "green1"
+         "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
+
+(dolist (mode '(clojure nrepl emacs-lisp lisp scheme lisp-interaction))
+  (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
+            (lambda ()
+            (highlight-parentheses-mode 1)
+            (paredit-mode 1)
+            (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp)
+            (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
+            (local-set-key (kbd "<C-M-s-left>") 'backward-select-sexp)
+            )))
 
 (defmacro defclojureface (name color desc &optional others)
   `(defface ,name '((((class color)) (:foreground ,color ,@others))) ,desc :group 'faces))
@@ -193,18 +204,8 @@ it to the beginning of the line."
 (global-set-key "\C-a" 'smart-line-beginning)
 
 ;; auto-complete-mode
-(require 'auto-complete-config)
-(ac-config-default)
-
-;; slime auto complete
-(require 'ac-slime)
-(add-hook 'slime-mode-hook 'set-up-slime-ac)
-
-;; fix indenting in repl
-(add-hook 'slime-repl-mode-hook
-          (lambda ()
-            (setq lisp-indent-function 'clojure-indent-function)
-            (set-syntax-table clojure-mode-syntax-table)))
+;;(require 'auto-complete-config)
+;;(ac-config-default)
 
 ;; enable awesome file prompting
 (ido-mode t)
@@ -237,73 +238,61 @@ it to the beginning of the line."
                            (split-window-vertically)
                            (other-window -1))))))
 
-(defun lein-swank ()
+(defun start-nrepl ()
   (interactive)
 
   (ensure-three-windows)
 
-  ;; Ensure *slime-repl clojure* is visible, so the current .clj buffer stays selected,
-  ;; because the next thing is usually to compile the .clj buffer.
-  (let* ((ls (display-buffer (get-buffer-create "*lein-swank*")))
-         (ls-flag (window-dedicated-p ls)))
-    (set-window-dedicated-p ls t)
-    (display-buffer (get-buffer-create "*slime-repl clojure*"))
-    (set-window-dedicated-p ls ls-flag))
+  ;; TODO: get the window
 
-  (let ((root (locate-dominating-file default-directory "project.clj")))
-    (when (not root)
-      (error "Not in a Leiningen project."))
-    ;; you can customize slime-port using .dir-locals.el
-    (shell-command (format "source ~/.bashrc && cd %s && lein swank %s &" root slime-port)
-                   "*lein-swank*")
-    (set-process-filter (get-buffer-process "*lein-swank*")
-                        (lambda (process output)
-                          (when (string-match "Connection opened on" output)
-                            (slime-connect "localhost" slime-port)
-                            (set-process-filter process nil))))
-    (message "Starting swank server...")))
+  (display-buffer (get-buffer-create "*scratch*"))
+  (display-buffer (get-buffer-create "*nrepl-error*"))
 
-(defun kill-lein-swank ()
+  (nrepl-jack-in))
+
+(defun stop-nrepl ()
   (interactive)
-  (kill-process (get-buffer-process "*lein-swank*"))
-  (message "Stopping swank server..."))
+  (kill-process (get-buffer-process "*nrepl-server*"))
+  (message "Stopping nrepl..."))
 
-(global-set-key (kbd "s-=") 'lein-swank)
-(global-set-key (kbd "s-+") 'kill-lein-swank)
+(global-set-key (kbd "s-=") 'start-nrepl)
+(global-set-key (kbd "s-+") 'stop-nrepl)
 
-(fset 'slime-repl-set-default-package
-  [?\C-c ?\M-p return])
+;; TODO: get these working for nrepl:
 
-(defun slime-set-default-package-switch-to-repl ()
-  (interactive)
-  (execute-kbd-macro 'slime-repl-set-default-package)
-  (slime-switch-to-output-buffer)
-  (insert "(use 'clojure.repl)")
-  (slime-repl-return))
+;; (fset 'slime-repl-set-default-package
+;;   [?\C-c ?\M-p return])
 
-(defun slime-save-compile-and-load-file ()
-  (interactive)
-  (save-buffer)
-  (slime-compile-and-load-file))
+;; (defun slime-set-default-package-switch-to-repl ()
+;;   (interactive)
+;;   (execute-kbd-macro 'slime-repl-set-default-package)
+;;   (slime-switch-to-output-buffer)
+;;   (insert "(use 'clojure.repl)")
+;;   (slime-repl-return))
 
-(defun slime-save-compile-defun ()
-  (interactive)
-  (save-buffer)
-  (slime-compile-defun)
-  (slime-switch-to-output-buffer))
+;; (defun slime-save-compile-and-load-file ()
+;;   (interactive)
+;;   (save-buffer)
+;;   (slime-compile-and-load-file))
 
-(defun slime-custom-keys ()
-  (define-key slime-mode-map (kbd "C-c C-k") 'slime-save-compile-and-load-file)
-  (define-key slime-mode-map (kbd "C-c C-c") 'slime-save-compile-defun)
-  (define-key slime-mode-map (kbd "C-c C-n") 'slime-set-default-package-switch-to-repl))
+;; (defun slime-save-compile-defun ()
+;;   (interactive)
+;;   (save-buffer)
+;;   (slime-compile-defun)
+;;   (slime-switch-to-output-buffer))
 
-(add-hook 'slime-mode-hook 'slime-custom-keys)
+;; (defun slime-custom-keys ()
+;;   (define-key slime-mode-map (kbd "C-c C-k") 'slime-save-compile-and-load-file)
+;;   (define-key slime-mode-map (kbd "C-c C-c") 'slime-save-compile-defun)
+;;   (define-key slime-mode-map (kbd "C-c C-n") 'slime-set-default-package-switch-to-repl))
 
-(defun slime-custom-repl-keys ()
-  (define-key slime-repl-mode-map (kbd "<s-up>") 'slime-repl-backward-input)
-  (define-key slime-repl-mode-map (kbd "<s-down>") 'slime-repl-forward-input))
+;; (add-hook 'slime-mode-hook 'slime-custom-keys)
 
-(add-hook 'slime-repl-mode-hook 'slime-custom-repl-keys)
+;; (defun slime-custom-repl-keys ()
+;;   (define-key slime-repl-mode-map (kbd "<s-up>") 'slime-repl-backward-input)
+;;   (define-key slime-repl-mode-map (kbd "<s-down>") 'slime-repl-forward-input))
+
+;; (add-hook 'slime-repl-mode-hook 'slime-custom-repl-keys)
 
 (defun squeeze-whitespace ()
   "Squeeze white space (including new lines) between objects around point.
