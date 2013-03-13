@@ -241,22 +241,19 @@ it to the beginning of the line."
 (defun start-nrepl ()
   (interactive)
 
+  (dolist (buffer (buffer-list))
+    (when (string-prefix-p "*nrepl" (buffer-name buffer))
+      (kill-buffer buffer)))
+
   (ensure-three-windows)
-
-  ;; TODO: get the window
-
-  (display-buffer (get-buffer-create "*scratch*"))
-  (display-buffer (get-buffer-create "*nrepl-error*"))
-
   (nrepl-jack-in))
 
-(defun stop-nrepl ()
+(defun kill-nrepl ()
   (interactive)
-  (kill-process (get-buffer-process "*nrepl-server*"))
-  (message "Stopping nrepl..."))
+  (kill-process (get-buffer-process "*nrepl-server*")))
 
 (global-set-key (kbd "s-=") 'start-nrepl)
-(global-set-key (kbd "s-+") 'stop-nrepl)
+(global-set-key (kbd "s-+") 'kill-nrepl)
 
 ;; TODO: get these working for nrepl:
 
