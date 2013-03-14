@@ -235,32 +235,28 @@ it to the beginning of the line."
 
 (defun start-nrepl ()
   (interactive)
-
-  (dolist (buffer (buffer-list))
-    (when (string-prefix-p "*nrepl" (buffer-name buffer))
-      (kill-buffer buffer)))
-
   (ensure-three-windows)
   (nrepl-jack-in))
 
-(defun kill-nrepl ()
-  (interactive)
-  (kill-process (get-buffer-process "*nrepl-server*")))
-
 (global-set-key (kbd "s-=") 'start-nrepl)
-(global-set-key (kbd "s-+") 'kill-nrepl)
+(global-set-key (kbd "s-+") 'nrepl-restart)
+
+(defun nrepl-set-ns-switch-to-repl-buffer ()
+  (nrepl-set-ns (nrepl-current-ns))
+  (nrepl-switch-to-repl-buffer))
+
+(defun nrepl-custom-keys ()
+  (define-key nrepl-interaction-mode-map (kbd "C-c C-n") 'nrepl-set-ns-switch-to-repl-buffer)
+  (define-key nrepl-mode-map (kbd "<s-up>") 'nrepl-backward-input)
+  (define-key nrepl-mode-map (kbd "<s-down>") 'nrepl-forward-input))
+
+(add-hook 'nrepl-mode-hook 'nrepl-custom-keys)
+
+;; (defun slime-custom-repl-keys ()
+
+;; (add-hook 'slime-repl-mode-hook 'slime-custom-repl-keys)
 
 ;; TODO: get these working for nrepl:
-
-;; (fset 'slime-repl-set-default-package
-;;   [?\C-c ?\M-p return])
-
-;; (defun slime-set-default-package-switch-to-repl ()
-;;   (interactive)
-;;   (execute-kbd-macro 'slime-repl-set-default-package)
-;;   (slime-switch-to-output-buffer)
-;;   (insert "(use 'clojure.repl)") ; won't need this for nrepl
-;;   (slime-repl-return))
 
 ;; (defun slime-save-compile-and-load-file ()
 ;;   (interactive)
@@ -275,16 +271,9 @@ it to the beginning of the line."
 
 ;; (defun slime-custom-keys ()
 ;;   (define-key slime-mode-map (kbd "C-c C-k") 'slime-save-compile-and-load-file)
-;;   (define-key slime-mode-map (kbd "C-c C-c") 'slime-save-compile-defun)
-;;   (define-key slime-mode-map (kbd "C-c C-n") 'slime-set-default-package-switch-to-repl))
+;;   (define-key slime-mode-map (kbd "C-c C-c") 'slime-save-compile-defun))
 
 ;; (add-hook 'slime-mode-hook 'slime-custom-keys)
-
-;; (defun slime-custom-repl-keys ()
-;;   (define-key slime-repl-mode-map (kbd "<s-up>") 'slime-repl-backward-input)
-;;   (define-key slime-repl-mode-map (kbd "<s-down>") 'slime-repl-forward-input))
-
-;; (add-hook 'slime-repl-mode-hook 'slime-custom-repl-keys)
 
 (defun squeeze-whitespace ()
   "Squeeze white space (including new lines) between objects around point.
