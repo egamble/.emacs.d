@@ -98,7 +98,7 @@
 (package-initialize)
 
 (let (refreshed)
-  (dolist (package '(clojure-mode clojure-test-mode nrepl))
+  (dolist (package '(clojure-mode clojure-test-mode nrepl auto-complete ac-nrepl))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
@@ -107,6 +107,19 @@
 
 ;; load clojure mode
 (require 'clojure-mode)
+
+;; auto-complete-mode
+(require 'auto-complete-config)
+(ac-config-default)
+
+;; DEBUG: why doesn't M-tab work with ac-nrepl?
+(require 'ac-nrepl)
+(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+(eval-after-load "auto-complete"
+'(add-to-list 'ac-modes 'nrepl-mode))
+
+(define-key nrepl-interaction-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
 
 ;; indent let? the same as let
 (define-clojure-indent
@@ -198,9 +211,6 @@ it to the beginning of the line."
 
 (global-set-key "\C-a" 'smart-line-beginning)
 
-;; auto-complete-mode
-;;(require 'auto-complete-config)
-;;(ac-config-default)
 
 ;; enable awesome file prompting
 (ido-mode t)
@@ -236,44 +246,27 @@ it to the beginning of the line."
 (defun start-nrepl ()
   (interactive)
   (ensure-three-windows)
-  (nrepl-jack-in))
+  (nrepl-restart))
 
 (global-set-key (kbd "s-=") 'start-nrepl)
-(global-set-key (kbd "s-+") 'nrepl-restart)
 
 (defun nrepl-set-ns-switch-to-repl-buffer ()
+  (interactive)
   (nrepl-set-ns (nrepl-current-ns))
   (nrepl-switch-to-repl-buffer))
 
+(defun nrepl-save-and-load-current-buffer ()
+  (interactive)
+  (save-buffer)
+  (nrepl-load-current-buffer))
+
 (defun nrepl-custom-keys ()
   (define-key nrepl-interaction-mode-map (kbd "C-c C-n") 'nrepl-set-ns-switch-to-repl-buffer)
+  (define-key nrepl-interaction-mode-map (kbd "C-c C-k") 'nrepl-save-and-load-current-buffer)
   (define-key nrepl-mode-map (kbd "<s-up>") 'nrepl-backward-input)
   (define-key nrepl-mode-map (kbd "<s-down>") 'nrepl-forward-input))
 
 (add-hook 'nrepl-mode-hook 'nrepl-custom-keys)
-
-;; (defun slime-custom-repl-keys ()
-
-;; (add-hook 'slime-repl-mode-hook 'slime-custom-repl-keys)
-
-;; TODO: get these working for nrepl:
-
-;; (defun slime-save-compile-and-load-file ()
-;;   (interactive)
-;;   (save-buffer)
-;;   (slime-compile-and-load-file))
-
-;; (defun slime-save-compile-defun ()
-;;   (interactive)
-;;   (save-buffer)
-;;   (slime-compile-defun)
-;;   (slime-switch-to-output-buffer))
-
-;; (defun slime-custom-keys ()
-;;   (define-key slime-mode-map (kbd "C-c C-k") 'slime-save-compile-and-load-file)
-;;   (define-key slime-mode-map (kbd "C-c C-c") 'slime-save-compile-defun))
-
-;; (add-hook 'slime-mode-hook 'slime-custom-keys)
 
 (defun squeeze-whitespace ()
   "Squeeze white space (including new lines) between objects around point.
