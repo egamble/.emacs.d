@@ -112,7 +112,6 @@
 (require 'auto-complete-config)
 (ac-config-default)
 
-;; DEBUG: why doesn't M-tab work with ac-nrepl?
 (require 'ac-nrepl)
 (add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
 (add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
@@ -120,6 +119,9 @@
 '(add-to-list 'ac-modes 'nrepl-mode))
 
 (define-key nrepl-interaction-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
+
+(add-hook 'nrepl-interaction-mode-hook
+  'nrepl-turn-on-eldoc-mode)
 
 ;; indent let? the same as let
 (define-clojure-indent
