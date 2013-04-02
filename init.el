@@ -37,9 +37,6 @@
 ;; personally, I can do without all those ~ files
 (setq make-backup-files nil)
 
-;; surprisingly, this dramatically speeds up Clojure compilation via slime
-(setq font-lock-verbose nil)
-
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
 ;; undo/redo pane configuration with C-c left/right arrow
@@ -76,7 +73,8 @@
     (global-set-key (kbd "s-v") 'clipboard-yank)
     (global-set-key (kbd "s-f") 'isearch-forward)
     (global-set-key (kbd "s-g") 'isearch-repeat-forward)
-    (global-set-key (kbd "s-z") 'undo)))
+    (global-set-key (kbd "s-z") 'undo)
+    (global-set-key (kbd "s-q") 'save-buffers-kill-terminal)))
 
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f12] 'other-window)
