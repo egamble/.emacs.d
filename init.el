@@ -1,15 +1,23 @@
 ;; turn off emacs startup message
 (setq inhibit-startup-message t)
 
+;; not necessary for OS X
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+
 ;; make transparent if the window manager supports it
 (add-to-list 'default-frame-alist '(alpha 85 75))
+
+;; hack to get transparent window on Ubuntu
+(if (eq system-type 'gnu/linux)
+    (progn (make-frame)
+           (sleep-for 1)
+           (delete-frame)))
 
 (setq frame-title-format '("%f"))
 
 ;; allow emacsclient to open files in a running emacs
 (server-start)
-
-(setq uname (shell-command "uname"))
 
 ;; do not wrap lines
 (setq-default truncate-lines t)
@@ -37,8 +45,38 @@
 ;; undo/redo pane configuration with C-c left/right arrow
 (winner-mode 1)
 
-;; probably OS X specific
-(global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
+(defun toggle-fullscreen (&optional f)
+  (interactive)
+  (let ((current-value (frame-parameter nil 'fullscreen)))
+    (set-frame-parameter nil 'fullscreen
+     (if (equal 'fullboth current-value)
+         (if (boundp 'old-fullscreen) old-fullscreen nil)
+       (progn (setq old-fullscreen current-value)
+              'fullboth)))))
+
+(if (eq system-type 'darwin)
+  (progn
+    (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
+    (global-set-key (kbd "<s-wheel-up>") 'text-scale-increase)
+    (global-set-key (kbd "<s-wheel-down>") 'text-scale-decrease))
+
+  ;; linux
+  (progn
+    (global-set-key (kbd "M-RET") 'toggle-fullscreen)
+    (global-set-key (kbd "<s-mouse-4>") 'text-scale-increase)
+    (global-set-key (kbd "<s-double-mouse-4>") 'text-scale-increase)
+    (global-set-key (kbd "<s-triple-mouse-4>") 'text-scale-increase)
+    (global-set-key (kbd "<s-mouse-5>") 'text-scale-decrease)
+    (global-set-key (kbd "<s-double-mouse-5>") 'text-scale-decrease)
+    (global-set-key (kbd "<s-triple-mouse-5>") 'text-scale-decrease)
+
+    (global-set-key (kbd "s-s") 'save-buffer)
+    (global-set-key (kbd "s-x") 'clipboard-kill-region)
+    (global-set-key (kbd "s-c") 'clipboard-kill-ring-save)
+    (global-set-key (kbd "s-v") 'clipboard-yank)
+    (global-set-key (kbd "s-f") 'isearch-forward)
+    (global-set-key (kbd "s-g") 'isearch-repeat-forward)
+    (global-set-key (kbd "s-z") 'undo)))
 
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f12] 'other-window)
@@ -52,9 +90,6 @@
 ;; keyboard macro key bindings
 (global-set-key (kbd "C-,")        'kmacro-start-macro-or-insert-counter)
 (global-set-key (kbd "C-.")        'kmacro-end-or-call-macro)
-
-(global-set-key (kbd "<s-wheel-up>") 'text-scale-increase)
-(global-set-key (kbd "<s-wheel-down>") 'text-scale-decrease)
 
 (defun find-init-file ()
   "Visit init.el."
@@ -74,7 +109,9 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:height 140)))))
+ (if (eq system-type 'darwin)
+   '(default ((t (:height 140))))
+   '(default ((t (:height 110))))))
 
 ;; add all subdirs of ~/.emacs.d to your load-path
 (dolist (f (file-expand-wildcards "~/.emacs.d/*"))
