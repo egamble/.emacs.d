@@ -8,12 +8,6 @@
 ;; make transparent if the window manager supports it
 (add-to-list 'default-frame-alist '(alpha 85 75))
 
-;; hack to get transparent window on Ubuntu
-(if (eq system-type 'gnu/linux)
-    (progn (make-frame)
-           (sleep-for 1)
-           (delete-frame)))
-
 (setq frame-title-format '("%f"))
 
 ;; allow emacsclient to open files in a running emacs
