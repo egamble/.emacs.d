@@ -101,9 +101,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- (if (eq system-type 'darwin)
-   '(default ((t (:height 140))))
-   '(default ((t (:height 110))))))
+ '(default ((t (:height 140)))))
 
 ;; add all subdirs of ~/.emacs.d to your load-path
 (dolist (f (file-expand-wildcards "~/.emacs.d/*"))
