@@ -6,7 +6,7 @@
   url = https://github.com/nonsequitur/smex.git
 [submodule "fold-dwim-org"]
   path = fold-dwim-org
-  url = git@github.com:emacsmirror/fold-dwim-org.git
+  url = https://github.com/emacsmirror/fold-dwim-org.git
 [submodule "fold-dwim"]
   path = fold-dwim
-  url = git@github.com:emacsmirror/fold-dwim.git
+  url = https://github.com/emacsmirror/fold-dwim.git
