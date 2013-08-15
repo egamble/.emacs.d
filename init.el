@@ -317,3 +317,8 @@ Leave one space or none, according to the context."
 (global-set-key (kbd "C-c SPC") 'ace-jump-mode)
 (global-set-key (kbd "C-c C-SPC") 'ace-jump-mode)
 (global-set-key (kbd "s-SPC") 'ace-jump-char-mode)
+
+(autoload 'markdown-mode "markdown-mode"
+   "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
