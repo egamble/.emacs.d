@@ -188,9 +188,9 @@
 ;; rainbow parentheses
 (require 'highlight-parentheses)
 (add-hook 'clojure-mode-hook '(lambda () (highlight-parentheses-mode 1)))
- (setq hl-paren-colors
-       '("orange1" "yellow1" "greenyellow" "green1"
-         "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
+(setq hl-paren-colors
+      '("orange1" "yellow1" "greenyellow" "green1"
+        "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
 
 (dolist (mode '(clojure nrepl emacs-lisp lisp scheme lisp-interaction))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
@@ -213,7 +213,6 @@
 (defclojureface clojure-namespace    "#c476f1"   "Clojure namespace")
 (defclojureface clojure-java-call    "#4bcf68"   "Clojure Java calls")
 (defclojureface clojure-special      "#b8bb00"   "Clojure special")
-(defclojureface clojure-double-quote "#b8bb00"   "Clojure special" (:background "unspecified"))
 
 (defun tweak-clojure-syntax ()
   (mapcar (lambda (x) (font-lock-add-keywords nil x))
@@ -221,7 +220,7 @@
             (("#?\\^?{\\|}"        . 'clojure-brackets))
             (("\\[\\|\\]"          . 'clojure-braces))
             ((":\\w+"              . 'clojure-keyword))
-            (("#?\""               0 'clojure-double-quote prepend))
+            (("#?\""               0 'clojure-special prepend))
             (("nil\\|true\\|false\\|%[1-9]?" . 'clojure-special))
             (("(\\(\\.[^ \n)]*\\|[^ \n)]+\\.\\|new\\)\\([ )\n]\\|$\\)" 1 'clojure-java-call)))))
 
