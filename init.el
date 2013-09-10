@@ -115,13 +115,10 @@
 (load-file "~/.emacs.d/color-theme/themes/wombat.el")
 (color-theme-wombat)
 
-;; TODO: is something similar to this hack needed for nrepl?
-;; printing strings in slime with unusual characters crashes without this
-;;(setq slime-net-coding-system 'utf-8-unix)
-
+;; if .emacs exists this must be moved there
 (require 'package)
 (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+            '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
 (let (refreshed)
