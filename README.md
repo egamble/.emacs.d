@@ -1,4 +1,4 @@
-My emacs init. Emacs 24 is required. I'm using it on Mac OS X 10.8 with a customized emacs 24.1 from [here](https://github.com/xajler/emacs24-macosx-lion-fullscreen).
+My emacs config. Emacs 24 is required. I'm using it on Mac OS X 10.8 with a customized emacs 24.1 from [here](https://github.com/xajler/emacs24-macosx-lion-fullscreen).
 
 ## Installation
 1. Back up ~/.emacs.d if there is anything you wish to keep.
