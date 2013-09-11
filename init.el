@@ -96,18 +96,8 @@
 (global-set-key (kbd "s-[") 'shrink-window)
 (global-set-key (kbd "s-]") 'enlarge-window)
 
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(default ((t (:height 140)))))
-
-;; add all subdirs of ~/.emacs.d to your load-path
-(dolist (f (file-expand-wildcards "~/.emacs.d/*"))
-  (add-to-list 'load-path f))
-
 ;; load color-theme
+(add-to-list 'load-path "~/.emacs.d/color-theme")
 (require 'color-theme)
 (color-theme-initialize)
 (setq color-theme-is-global t)
@@ -115,14 +105,16 @@
 (load-file "~/.emacs.d/color-theme/themes/wombat.el")
 (color-theme-wombat)
 
-;; if .emacs exists this must be moved there
-(require 'package)
-(add-to-list 'package-archives
-            '("marmalade" . "http://marmalade-repo.org/packages/"))
-(package-initialize)
-
 (let (refreshed)
-  (dolist (package '(clojure-mode clojure-test-mode nrepl auto-complete ac-nrepl))
+  (dolist (package '(auto-complete
+                     paredit
+                     clojure-mode clojure-test-mode
+                     nrepl ac-nrepl
+                     highlight-parentheses
+                     fold-dwim fold-dwim-org
+                     smex
+                     markdown-mode
+                     ace-jump-mode))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
@@ -151,8 +143,6 @@
 (define-clojure-indent
   (let? 1))
 
-(require 'paredit)
-
 ;; Toggle fold-dwim-org mode with C-tab.
 ;; While fold-dwim-org mode is enabled:
 ;;  tab shows/hides block,
@@ -163,6 +153,8 @@
 ;; supports fold-dwim-org
 ;; add separately from other lispish mode hooks because it messes up the nrepl buffer
 (add-hook 'clojure-mode-hook 'hs-minor-mode)
+
+(require 'paredit)
 
 (defun forward-select-sexp ()
   "Select sexp after point."
@@ -275,10 +267,9 @@ it to the beginning of the line."
 
 (global-set-key (kbd "s-=") 'start-nrepl)
 
-(defun nrepl-set-ns-switch-to-repl-buffer ()
+(defun nrepl-switch-to-repl-buffer-set-ns ()
   (interactive)
-  (nrepl-set-ns (nrepl-current-ns))
-  (nrepl-switch-to-repl-buffer))
+  (nrepl-switch-to-repl-buffer t))
 
 (defun nrepl-save-and-load-current-buffer ()
   (interactive)
@@ -286,7 +277,7 @@ it to the beginning of the line."
   (nrepl-load-current-buffer))
 
 (defun nrepl-custom-keys ()
-  (define-key nrepl-interaction-mode-map (kbd "C-c C-n") 'nrepl-set-ns-switch-to-repl-buffer)
+  (define-key nrepl-interaction-mode-map (kbd "C-c C-n") 'nrepl-switch-to-repl-buffer-set-ns)
   (define-key nrepl-interaction-mode-map (kbd "C-c C-k") 'nrepl-save-and-load-current-buffer)
   (define-key nrepl-mode-map (kbd "<s-up>") 'nrepl-backward-input)
   (define-key nrepl-mode-map (kbd "<s-down>") 'nrepl-forward-input))
@@ -318,3 +309,18 @@ Leave one space or none, according to the context."
    "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
+
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:height 140)))))
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(markdown-command "/usr/local/bin/markdown"))
