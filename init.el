@@ -36,24 +36,24 @@
 ;; undo/redo pane configuration with C-c left/right arrow
 (winner-mode 1)
 
-(defun toggle-fullscreen (&optional f)
+(defun toggle-fullscreen ()
   (interactive)
-  (let ((current-value (frame-parameter nil 'fullscreen)))
-    (set-frame-parameter nil 'fullscreen
-     (if (equal 'fullboth current-value)
-         (if (boundp 'old-fullscreen) old-fullscreen nil)
-       (progn (setq old-fullscreen current-value)
-              'fullboth)))))
+  (set-frame-parameter
+     nil 'fullscreen
+     (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
+
+(global-set-key (kbd "M-RET") 'toggle-fullscreen)
 
 (if (eq system-type 'darwin)
   (progn
-    (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
+    ;; remove this until ns-toggle-fullscreen is available again
+;   (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
     (global-set-key (kbd "<s-wheel-up>") 'text-scale-increase)
     (global-set-key (kbd "<s-wheel-down>") 'text-scale-decrease))
 
   ;; linux
   (progn
-    (global-set-key (kbd "M-RET") 'toggle-fullscreen)
+;   (global-set-key (kbd "M-RET") 'toggle-fullscreen)
     (global-set-key (kbd "<s-mouse-4>") 'text-scale-increase)
     (global-set-key (kbd "<s-double-mouse-4>") 'text-scale-increase)
     (global-set-key (kbd "<s-triple-mouse-4>") 'text-scale-increase)
