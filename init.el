@@ -46,14 +46,11 @@
 
 (if (eq system-type 'darwin)
   (progn
-    ;; remove this until ns-toggle-fullscreen is available again
-;   (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
     (global-set-key (kbd "<s-wheel-up>") 'text-scale-increase)
     (global-set-key (kbd "<s-wheel-down>") 'text-scale-decrease))
 
   ;; linux
   (progn
-;   (global-set-key (kbd "M-RET") 'toggle-fullscreen)
     (global-set-key (kbd "<s-mouse-4>") 'text-scale-increase)
     (global-set-key (kbd "<s-double-mouse-4>") 'text-scale-increase)
     (global-set-key (kbd "<s-triple-mouse-4>") 'text-scale-increase)
