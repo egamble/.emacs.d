@@ -36,6 +36,7 @@
 ;; undo/redo pane configuration with C-c left/right arrow
 (winner-mode 1)
 
+
 (defun toggle-fullscreen ()
   (interactive)
   (set-frame-parameter
@@ -43,6 +44,7 @@
      (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
 
 (global-set-key (kbd "M-RET") 'toggle-fullscreen)
+
 
 (if (eq system-type 'darwin)
   (progn
@@ -93,6 +95,7 @@
 (global-set-key (kbd "s-[") 'shrink-window)
 (global-set-key (kbd "s-]") 'enlarge-window)
 
+
 ;; load color-theme
 (add-to-list 'load-path "~/.emacs.d/color-theme")
 (require 'color-theme)
@@ -101,6 +104,7 @@
 ;; use wombat
 (load-file "~/.emacs.d/color-theme/themes/wombat.el")
 (color-theme-wombat)
+
 
 (let (refreshed)
   (dolist (package '(auto-complete
@@ -111,12 +115,14 @@
                      fold-dwim fold-dwim-org
                      smex
                      markdown-mode
-                     ace-jump-mode))
+                     ace-jump-mode
+                     json-mode))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
         (setq refreshed t))
       (package-install package))))
+
 
 ;; load clojure mode
 (require 'clojure-mode)
@@ -136,9 +142,11 @@
 (add-hook 'nrepl-interaction-mode-hook
   'nrepl-turn-on-eldoc-mode)
 
+
 ;; indent let? the same as let
 (define-clojure-indent
   (let? 1))
+
 
 ;; Toggle fold-dwim-org mode with C-tab.
 ;; While fold-dwim-org mode is enabled:
@@ -150,6 +158,7 @@
 ;; supports fold-dwim-org
 ;; add separately from other lispish mode hooks because it messes up the nrepl buffer
 (add-hook 'clojure-mode-hook 'hs-minor-mode)
+
 
 (require 'paredit)
 
@@ -170,6 +179,7 @@
   (paredit-forward)
   (set-mark (point))
   (paredit-backward))
+
 
 ;; rainbow parentheses
 (require 'highlight-parentheses)
@@ -212,6 +222,7 @@
 
 (add-hook 'clojure-mode-hook 'tweak-clojure-syntax)
 
+
 (defun smart-line-beginning ()
   "Move point to the beginning of text
 on the current line; if that is already
@@ -242,12 +253,14 @@ it to the beginning of the line."
 ;; This is your old M-x.
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
+
 ;; display pretty lambdas
 (font-lock-add-keywords 'emacs-lisp-mode
     '(("(\\(lambda\\)\\>" (0 (prog1 ()
                                (compose-region (match-beginning 1)
                                                (match-end 1)
                                                ?λ))))))
+
 
 (defun ensure-three-windows ()
   (let ((c (length (window-list))))
@@ -281,6 +294,7 @@ it to the beginning of the line."
 
 (add-hook 'nrepl-mode-hook 'nrepl-custom-keys)
 
+
 (defun squeeze-whitespace ()
   "Squeeze white space (including new lines) between objects around point.
 Leave one space or none, according to the context."
@@ -294,6 +308,7 @@ Leave one space or none, according to the context."
 
 (global-set-key (kbd "s-6") 'squeeze-whitespace)
 
+
 (require 'ace-jump-mode)
 ;; C-c SPC and C-c C-SPC are ace-jump-word-mode
 ;; C-u C-c SPC and C-u C-c C-SPC and s-SPC are ace-jump-char-mode
@@ -302,10 +317,17 @@ Leave one space or none, according to the context."
 (global-set-key (kbd "C-c C-SPC") 'ace-jump-mode)
 (global-set-key (kbd "s-SPC") 'ace-jump-char-mode)
 
+
 (autoload 'markdown-mode "markdown-mode"
-   "Major mode for editing Markdown files" t)
+  "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
+
+;; C-c C-f pretty prints a JSON buffer
+(autoload 'json-mode "json-mode"
+  "Major mode for editing JSON files" t)
+(add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
 
 
 (custom-set-faces
