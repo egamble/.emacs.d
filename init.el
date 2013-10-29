@@ -279,6 +279,8 @@ it to the beginning of the line."
       nrepl-connection-buffer
       (car (nrepl-connection-buffers))))
 
+(defvar repl-ns nil)
+
 (defun start-cider ()
   (interactive)
   (ensure-three-windows)
@@ -286,12 +288,10 @@ it to the beginning of the line."
     (when connection
       (nrepl-close connection)))
   (nrepl-close-ancilliary-buffers)
+  (setq repl-ns nil)
   (cider-jack-in))
 
 (global-set-key (kbd "s-=") 'start-cider)
-
-
-(defvar repl-ns nil)
 
 (defun cider-save-load-switch-to-repl-set-ns ()
   (interactive)
