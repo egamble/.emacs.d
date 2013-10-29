@@ -1,4 +1,4 @@
-Emacs 24.3 is required for this init.el. I'm using it on Mac OS X 10.8 with emacs 24.3.50 from [emacsformacosx.com](http://emacsformacosx.com/), available in the "Nightlies" section of [Builds](http://emacsformacosx.com/builds). Fullscreen on OS X looks better starting at version 24.3.50.
+Emacs 24.3 is required for this init.el. I'm using it on Mac OS X 10.8 with emacs 24.3.50 from [emacsformacosx.com](http://emacsformacosx.com/). Fullscreen on OS X looks better starting at version 24.3.50.
 
 ## Installation
 1. Back up ~/.emacs.d if there is anything you wish to keep.

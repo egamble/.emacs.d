@@ -110,7 +110,7 @@
   (dolist (package '(auto-complete
                      paredit
                      clojure-mode clojure-test-mode
-                     nrepl ac-nrepl
+                     cider ac-nrepl
                      highlight-parentheses
                      fold-dwim fold-dwim-org
                      smex
@@ -123,25 +123,27 @@
         (setq refreshed t))
       (package-install package))))
 
+(require 'cider)
+(defun cider--library-version ()
+  "Temporary version of this function until the real one is fixed.
+  https://github.com/clojure-emacs/cider/issues/408"
+  "0.3.1-SNAPSHOT")
 
-;; load clojure mode
+;; hide *nrepl-server* and *nrepl-connection* buffers
+(setq nrepl-hide-special-buffers t)
+(setq cider-repl-use-pretty-printing t)
+
 (require 'clojure-mode)
 
-;; auto-complete-mode
 (require 'auto-complete-config)
 (ac-config-default)
 
 (require 'ac-nrepl)
-(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
-(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+(add-hook 'cider-mode-hook 'ac-nrepl-setup)
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+(add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
 (eval-after-load "auto-complete"
-'(add-to-list 'ac-modes 'nrepl-mode))
-
-(define-key nrepl-interaction-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
-
-(add-hook 'nrepl-interaction-mode-hook
-  'nrepl-turn-on-eldoc-mode)
-
+  '(add-to-list 'ac-modes 'cider-repl-mode))
 
 ;; indent let? the same as let
 (define-clojure-indent
@@ -188,7 +190,7 @@
       '("orange1" "yellow1" "greenyellow" "green1"
         "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
 
-(dolist (mode '(clojure nrepl emacs-lisp lisp scheme lisp-interaction))
+(dolist (mode '(clojure cider cider-repl emacs-lisp lisp scheme lisp-interaction))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
             (highlight-parentheses-mode 1)
@@ -270,29 +272,44 @@ it to the beginning of the line."
                            (split-window-vertically)
                            (other-window -1))))))
 
-(defun start-nrepl ()
+;; Temporary until the real function is fixed so it doesn't throw an error.
+(defun nrepl-current-connection-buffer ()
+  "The connection to use for nREPL interaction."
+  (or nrepl-connection-dispatch
+      nrepl-connection-buffer
+      (car (nrepl-connection-buffers))))
+
+(defun start-cider ()
   (interactive)
   (ensure-three-windows)
-  (nrepl-restart))
+  (dolist (connection nrepl-connection-list)
+    (when connection
+      (nrepl-close connection)))
+  (nrepl-close-ancilliary-buffers)
+  (cider-jack-in))
 
-(global-set-key (kbd "s-=") 'start-nrepl)
+(global-set-key (kbd "s-=") 'start-cider)
 
-(defun nrepl-switch-to-repl-buffer-set-ns ()
-  (interactive)
-  (nrepl-switch-to-repl-buffer t))
 
-(defun nrepl-save-and-load-current-buffer ()
+(defvar repl-ns nil)
+
+(defun cider-save-load-switch-to-repl-set-ns ()
   (interactive)
   (save-buffer)
-  (nrepl-load-current-buffer))
+  (cider-load-current-buffer)
+  (let* ((ns (cider-current-ns))
+         (arg (when (not (equal repl-ns ns))
+                (setq repl-ns ns)
+                t)))
+    (cider-switch-to-repl-buffer arg)))
 
-(defun nrepl-custom-keys ()
-  (define-key nrepl-interaction-mode-map (kbd "C-c C-n") 'nrepl-switch-to-repl-buffer-set-ns)
-  (define-key nrepl-interaction-mode-map (kbd "C-c C-k") 'nrepl-save-and-load-current-buffer)
-  (define-key nrepl-mode-map (kbd "<s-up>") 'nrepl-backward-input)
-  (define-key nrepl-mode-map (kbd "<s-down>") 'nrepl-forward-input))
+(defun cider-custom-keys ()
+  (define-key cider-mode-map (kbd "C-c C-k") 'cider-save-load-switch-to-repl-set-ns)
+  (define-key cider-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
+  (define-key cider-repl-mode-map (kbd "<s-up>") 'cider-backward-input)
+  (define-key cider-repl-mode-map (kbd "<s-down>") 'cider-forward-input))
 
-(add-hook 'nrepl-mode-hook 'nrepl-custom-keys)
+(add-hook 'cider-mode-hook 'cider-custom-keys)
 
 
 (defun squeeze-whitespace ()
