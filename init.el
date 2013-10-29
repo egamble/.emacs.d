@@ -123,12 +123,8 @@
         (setq refreshed t))
       (package-install package))))
 
-(require 'cider)
-(defun cider--library-version ()
-  "Temporary version of this function until the real one is fixed.
-  https://github.com/clojure-emacs/cider/issues/408"
-  "0.3.1-SNAPSHOT")
 
+(require 'cider)
 ;; hide *nrepl-server* and *nrepl-connection* buffers
 (setq nrepl-hide-special-buffers t)
 (setq cider-repl-use-pretty-printing t)
