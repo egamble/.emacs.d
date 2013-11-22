@@ -13,9 +13,6 @@
 ;; allow emacsclient to open files in a running emacs
 (server-start)
 
-;; do not wrap lines
-(setq-default truncate-lines t)
-
 ;; tab width as two, using spaces
 (setq default-tab-width 2)
 (setq-default indent-tabs-mode nil)
@@ -27,6 +24,9 @@
 (scroll-bar-mode -1)
 
 (put 'scroll-left 'disabled nil)
+
+;; no audible or visible bell
+(setq ring-bell-function (lambda () nil))
 
 ;; personally, I can do without all those ~ files
 (setq make-backup-files nil)
