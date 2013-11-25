@@ -127,7 +127,6 @@
 (require 'cider)
 ;; hide *nrepl-server* and *nrepl-connection* buffers
 (setq nrepl-hide-special-buffers t)
-(setq cider-repl-use-pretty-printing t)
 
 (require 'clojure-mode)
 
@@ -303,7 +302,8 @@ it to the beginning of the line."
   (define-key cider-mode-map (kbd "C-c C-k") 'cider-save-load-switch-to-repl-set-ns)
   (define-key cider-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
   (define-key cider-repl-mode-map (kbd "<s-up>") 'cider-backward-input)
-  (define-key cider-repl-mode-map (kbd "<s-down>") 'cider-forward-input))
+  (define-key cider-repl-mode-map (kbd "<s-down>") 'cider-forward-input)
+  (define-key cider-repl-mode-map (kbd "C-c p") 'cider-toggle-pretty-printing))
 
 (add-hook 'cider-mode-hook 'cider-custom-keys)
 
