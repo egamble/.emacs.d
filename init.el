@@ -282,7 +282,7 @@ it to the beginning of the line."
   (dolist (connection nrepl-connection-list)
     (when connection
       (nrepl-close connection)))
-  (nrepl-close-ancilliary-buffers)
+  (cider-close-ancilliary-buffers)
   (setq repl-ns nil)
   (cider-jack-in))
 
