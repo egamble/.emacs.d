@@ -1,8 +1,11 @@
-Emacs 24.3 is required for this init.el. I'm using it on Mac OS X 10.9 with emacs 24.3.50 from [emacsformacosx.com](http://emacsformacosx.com/), available in the "Nightlies" section of [Builds](http://emacsformacosx.com/builds).  Fullscreen on OS X looks better starting at version 24.3.50.
+Emacs 24.3 is required for this init.el. I'm using it on Mac OS X 10.9 with emacs 24.3.50 from [emacsformacosx.com](http://emacsformacosx.com/), available in the "Nightlies" section of [Builds](http://emacsformacosx.com/builds), rather than the "current" release, which is at 24.3.1.  Fullscreen on OS X looks better starting at version 24.3.50.
+
+NB: The very latest builds in "Nightlies" seem to throw an error while reading init.el. The build from September 12, 2013 works well for me.
 
 ## Installation
 1. Back up ~/.emacs.d if there is anything you wish to keep.
 2. `git clone git://github.com/egamble/.emacs.d.git` from your home directory.
 3. Either `cp ~/.emacs.d/.emacs ~` or merge ~/.emacs.d/.emacs with your existing ~/.emacs
-4. To open a file from a terminal shell in the currently running Emacs.app, put a link to /Applications/Emacs.app/Contents/MacOS/bin/emacsclient somewhere on your PATH. E.g. `ln -s /Applications/Emacs.app/Contents/MacOS/bin/emacsclient /usr/local/bin/emacsclient; PATH=/usr/local/bin:$PATH`
+4. To open a file from a terminal shell in the currently running Emacs.app, put a link to /Applications/Emacs.app/Contents/MacOS/bin/emacsclient somewhere on your PATH. E.g. `ln -s /Applications/Emacs.app/Contents/MacOS/bin/emacsclient /usr/local/bin/emacsclient; PATH=/usr/local/bin:$PATH`. Verify with `which emacsclient` that `emacsclient` comes from `/usr/local/bin` rather `/usr/bin`.
 5. A nice shortcut for invoking emacsclient is `alias e='emacsclient -n'`.
+6. Whenever you update your ~/.emacs.d from this repo with `git pull`, remove `~/.emacs.d/elpa` before restarting emacs, to get the latest versions of the emacs packages.
