@@ -258,6 +258,15 @@ it to the beginning of the line."
                                                (match-end 1)
                                                ?λ))))))
 
+;; display clojure 'fn' as a pretty lambda
+(defun clj-pretty-fn ()
+  (font-lock-add-keywords nil `(("(\\(\\<fn\\>\\)"
+                                 (0 (progn (compose-region (match-beginning 1)
+                                                           (match-end 1)
+                                                           ?λ
+                                                           'decompose-region)))))))
+(add-hook 'clojure-mode-hook 'clj-pretty-fn)
+(add-hook 'cider-repl-mode-hook 'clj-pretty-fn)
 
 (defun ensure-three-windows ()
   (let ((c (length (window-list))))
