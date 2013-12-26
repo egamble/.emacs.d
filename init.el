@@ -125,9 +125,6 @@
 
 
 (require 'cider)
-;; hide *nrepl-server* and *nrepl-connection* buffers
-(setq nrepl-hide-special-buffers t)
-
 (require 'clojure-mode)
 
 (require 'auto-complete-config)
