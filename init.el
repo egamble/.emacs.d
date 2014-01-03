@@ -289,7 +289,18 @@ it to the beginning of the line."
   (setq repl-ns nil)
   (cider-jack-in))
 
+(defun post-start-cider ()
+  (interactive)
+  (let ((server-buffer (replace-regexp-in-string
+                        "cider" "nrepl-server"
+                        (buffer-name (current-buffer)))))
+    (other-window -1)
+    (switch-to-buffer server-buffer)
+    (other-window 1))
+  (cider-switch-to-last-clojure-buffer))
+
 (global-set-key (kbd "s-=") 'start-cider)
+(global-set-key (kbd "s-+") 'post-start-cider)
 
 (defun cider-save-load-switch-to-repl-set-ns ()
   (interactive)
@@ -301,6 +312,7 @@ it to the beginning of the line."
                 t)))
     (cider-switch-to-repl-buffer arg)))
 
+;; Also remember C-c C-z, which switches back and forth between the REPL and the last Clojure buffer.
 (defun cider-custom-keys ()
   (define-key cider-mode-map (kbd "C-c C-k") 'cider-save-load-switch-to-repl-set-ns)
   (define-key cider-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
