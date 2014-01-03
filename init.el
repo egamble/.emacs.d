@@ -282,6 +282,14 @@ it to the beginning of the line."
 (defun start-cider ()
   (interactive)
   (ensure-three-windows)
+
+  ;; Any other window with the current buffer is switched to something else, so post-start-cider won't get confused.
+  (let ((ws (get-buffer-window-list (current-buffer))))
+    (dolist (w (cdr ws))
+      (select-window w)
+      (switch-to-buffer "*Messages*"))
+    (select-window (car ws)))
+
   (dolist (connection nrepl-connection-list)
     (when connection
       (nrepl-close connection)))
@@ -299,14 +307,39 @@ it to the beginning of the line."
                 t)))
     (cider-switch-to-repl-buffer arg)))
 
+;; Run this after start-cider.
+;; 1. Tries to move the REPL to the lower right window.
+;; 2. Puts the nrepl-server buffer above the REPL window.
+;; 3. Loads the Clojure buffer and sets the namespace in the REPL.
+;; 4. Goes back to the Clojure window.
 (defun post-start-cider ()
   (interactive)
-  (let ((server-buffer (replace-regexp-in-string
-                        "cider" "nrepl-server"
-                        (buffer-name (current-buffer)))))
+  (let* ((repl-win (car (window-list)))
+         (repl-buf (current-buffer))
+         (server-buf (replace-regexp-in-string
+                      "cider" "nrepl-server"
+                      (buffer-name repl-buf))))
+
+    (cider-switch-to-last-clojure-buffer)
+
+    (let ((clj-win (car (window-list))))
+      ;; Switch the REPL window to some other buffer, in case there are more than three windows and the REPL is in the wrong one.
+      (select-window repl-win)
+      (switch-to-buffer "*Messages*")
+      (select-window clj-win))
+
+    ;; Put the REPL in the window before the Clojure buffer, i.e. the bottom right window (usually).
     (other-window -1)
-    (switch-to-buffer server-buffer)
+    (switch-to-buffer repl-buf)
+
+    ;; Put the server buffer in the window before the REPL, generally just above it.
+    (other-window -1)
+    (switch-to-buffer server-buf)
+
+    ;; Select the REPL window again.
     (other-window 1))
+
+  ;; Go to the Clojure window to load it, which puts us in the REPL window (and sets the NS), then go back to the Clojure window.
   (cider-switch-to-last-clojure-buffer)
   (cider-save-load-switch-to-repl-set-ns)
   (cider-switch-to-last-clojure-buffer))
