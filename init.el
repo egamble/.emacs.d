@@ -95,6 +95,8 @@
 (global-set-key (kbd "s-[") 'shrink-window)
 (global-set-key (kbd "s-]") 'enlarge-window)
 
+(global-set-key (kbd "M-s-ß") 'isearch-forward-symbol-at-point)
+
 
 ;; load color-theme
 (add-to-list 'load-path "~/.emacs.d/color-theme")
