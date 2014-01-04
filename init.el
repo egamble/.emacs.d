@@ -289,9 +289,7 @@ it to the beginning of the line."
   ;; Any other window with the current buffer is switched to something else, so post-start-cider won't get confused.
   (let ((ws (get-buffer-window-list (current-buffer))))
     (dolist (w (cdr ws))
-      (select-window w)
-      (switch-to-buffer "*Messages*"))
-    (select-window (car ws)))
+      (set-window-buffer w "*Messages*")))
 
   (dolist (connection nrepl-connection-list)
     (when connection
@@ -317,6 +315,14 @@ it to the beginning of the line."
 ;; 4. Goes back to the Clojure window.
 (defun post-start-cider ()
   (interactive)
+
+  ;; Select the REPL window if it's not already selected.
+  (let ((ws (window-list)))
+    (when (not (string-match "cider" (buffer-name (current-buffer))))
+      (dolist (w (window-list))
+        (when (string-match "cider" (buffer-name (window-buffer w)))
+          (select-window w)))))
+
   (let* ((repl-win (car (window-list)))
          (repl-buf (current-buffer))
          (server-buf (replace-regexp-in-string
@@ -325,11 +331,8 @@ it to the beginning of the line."
 
     (cider-switch-to-last-clojure-buffer)
 
-    (let ((clj-win (car (window-list))))
-      ;; Switch the REPL window to some other buffer, in case there are more than three windows and the REPL is in the wrong one.
-      (select-window repl-win)
-      (switch-to-buffer "*Messages*")
-      (select-window clj-win))
+    ;; Switch the REPL window to some other buffer, in case there are more than three windows and the REPL is in the wrong one.
+    (set-window-buffer repl-win "*Messages*")
 
     ;; Put the REPL in the window before the Clojure buffer, i.e. the bottom right window (usually).
     (other-window -1)
