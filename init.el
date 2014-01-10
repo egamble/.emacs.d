@@ -96,7 +96,7 @@
 (global-set-key (kbd "s-]") 'enlarge-window)
 
 (global-set-key (kbd "C-s-s") 'isearch-forward-symbol-at-point)
-(global-set-key (kbd "<C-s-268632083>") 'isearch-forward-symbol-at-point) ; OS X turns C-s-s into C-s-268632083
+(global-set-key (kbd "<C-s-268632083>") 'isearch-forward-symbol-at-point) ; OS X turns C-s-s into <C-s-268632083>
 
 
 ;; load color-theme
