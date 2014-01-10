@@ -348,6 +348,7 @@ it to the beginning of the line."
   ;; Go to the Clojure window to load it, which puts us in the REPL window (and sets the NS), then go back to the Clojure window.
   (cider-switch-to-last-clojure-buffer)
   (cider-save-load-switch-to-repl-set-ns)
+  (cider-eval-and-get-value "(clojure.core/use 'clojure.repl)") ; so we can use e.g. the source and doc functions
   (cider-switch-to-last-clojure-buffer))
 
 (global-set-key (kbd "s-=") 'start-cider)
