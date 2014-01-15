@@ -1,9 +1,12 @@
 ;; turn off emacs startup message
 (setq inhibit-startup-message t)
 
-;; not necessary for OS X
+;; turn off menu bar
 (menu-bar-mode -1)
-(tool-bar-mode -1)
+
+;; turn off tool bar
+(if (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
 
 ;; make transparent if the window manager supports it
 (add-to-list 'default-frame-alist '(alpha 85 75))
@@ -20,8 +23,9 @@
 ;; show column numbers
 (setq column-number-mode t)
 
-;; turn off scroll-bars
-(scroll-bar-mode -1)
+;; turn off scroll bars
+(if (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
 
 (put 'scroll-left 'disabled nil)
 
