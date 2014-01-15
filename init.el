@@ -119,7 +119,8 @@
                      smex
                      markdown-mode
                      ace-jump-mode
-                     json-mode))
+                     json-mode
+                     projectile))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
@@ -354,7 +355,11 @@ it to the beginning of the line."
 (global-set-key (kbd "s-=") 'start-cider)
 (global-set-key (kbd "s-+") 'post-start-cider)
 
-;; Also remember C-c C-z, which switches back and forth between the REPL and the last Clojure buffer.
+;; Also remember:
+;; C-c C-z switches back and forth between the REPL and the last Clojure buffer
+;; C-c C-e evaluates expression preceding point
+;; C-c C-r evaluates region
+;; C-C C-c evaluates def at point
 (defun cider-custom-keys ()
   (define-key cider-mode-map (kbd "C-c C-k") 'cider-save-load-switch-to-repl-set-ns)
   (define-key cider-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
@@ -398,6 +403,11 @@ Leave one space or none, according to the context."
 (autoload 'json-mode "json-mode"
   "Major mode for editing JSON files" t)
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
+
+
+;; navigate projects with Projectile (C-c p C-h for available commands)
+(projectile-global-mode)
+(setq projectile-show-paths-function 'projectile-hashify-with-relative-paths) ; Projectile shows full relative paths
 
 
 (custom-set-faces
