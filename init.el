@@ -196,8 +196,8 @@
             (highlight-parentheses-mode 1)
             (paredit-mode 1)
             (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp)
-            (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
-            (local-set-key (kbd "<C-M-s-left>") 'backward-select-sexp)
+            (local-set-key (kbd "<M-s-right>") 'forward-select-sexp)
+            (local-set-key (kbd "<M-s-left>") 'backward-select-sexp)
             )))
 
 
@@ -361,15 +361,18 @@ it to the beginning of the line."
 
 ;; Also remember:
 ;; C-c C-z switches back and forth between the REPL and the last Clojure buffer
-;; C-c C-e evaluates expression preceding point
+;; M-s-down and C-c C-e evaluates expression preceding point
 ;; C-c C-r evaluates region
 ;; C-C C-c evaluates def at point
 (defun cider-custom-keys ()
   (define-key cider-mode-map (kbd "C-c C-k") 'cider-save-load-switch-to-repl-set-ns)
+  (define-key cider-mode-map [f8] 'cider-save-load-switch-to-repl-set-ns)
   (define-key cider-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
+  (define-key cider-mode-map (kbd "<M-s-down>") 'cider-eval-last-sexp)
   (define-key cider-repl-mode-map (kbd "<s-up>") 'cider-repl-backward-input)
   (define-key cider-repl-mode-map (kbd "<s-down>") 'cider-repl-forward-input)
-  (define-key cider-repl-mode-map (kbd "C-c p") 'cider-repl-toggle-pretty-printing))
+  (define-key cider-repl-mode-map (kbd "C-c p") 'cider-repl-toggle-pretty-printing)
+  (define-key cider-repl-mode-map [f8] 'cider-switch-to-last-clojure-buffer))
 
 (add-hook 'cider-mode-hook 'cider-custom-keys)
 
@@ -409,17 +412,20 @@ Leave one space or none, according to the context."
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
 
 
-;; navigate projects with Projectile (C-c p C-h for available commands)
-(projectile-global-mode)
-(setq projectile-show-paths-function 'projectile-hashify-with-relative-paths) ; Projectile shows full relative paths
-
+;; Recursively generate tags for all *.clj files, creating tags for def* and namespaces
+;; TODO: start at level of project.clj for whatever the current source file is, putting the TAGS file there
+;; (defun create-clj-tags (dir-name)
+;;  "Create tags file."
+;;  (interactive "Directory: ")
+;;  (shell-command
+;;   (format "find . \! -name '.*' -name '*.clj' | xargs etags --regex='/[ \t\(]*def[a-z]* \([a-z->!]+\)/\1/' --regex='/[ \t\(]*ns \([a-z.]+\)/\1/'"))
 
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:height 140)))))
+  '(default ((t (:height 140)))))
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
