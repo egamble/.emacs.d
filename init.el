@@ -195,9 +195,11 @@
             (lambda ()
             (highlight-parentheses-mode 1)
             (paredit-mode 1)
-            (local-set-key (kbd "<M-left>") 'paredit-convolute-sexp)
-            (local-set-key (kbd "<M-s-right>") 'forward-select-sexp)
-            (local-set-key (kbd "<M-s-left>") 'backward-select-sexp)
+            (local-set-key (kbd "<M-left>")      'paredit-convolute-sexp)
+            (local-set-key (kbd "<M-s-right>")   'forward-select-sexp)
+            (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
+            (local-set-key (kbd "<M-s-left>")    'backward-select-sexp)
+            (local-set-key (kbd "<C-M-s-left>")  'backward-select-sexp)
             )))
 
 
@@ -361,18 +363,22 @@ it to the beginning of the line."
 
 ;; Also remember:
 ;; C-c C-z switches back and forth between the REPL and the last Clojure buffer
-;; M-s-down and C-c C-e evaluates expression preceding point
+;; [f9], M-s-down and C-c C-e evaluate expression preceding point
 ;; C-c C-r evaluates region
 ;; C-C C-c evaluates def at point
+;; C-up, C-down and s-up, s-down go backward and forward in REPL history
 (defun cider-custom-keys ()
-  (define-key cider-mode-map (kbd "C-c C-k") 'cider-save-load-switch-to-repl-set-ns)
-  (define-key cider-mode-map [f8] 'cider-save-load-switch-to-repl-set-ns)
-  (define-key cider-mode-map (kbd "C-c C-d") 'ac-nrepl-popup-doc)
-  (define-key cider-mode-map (kbd "<M-s-down>") 'cider-eval-last-sexp)
-  (define-key cider-repl-mode-map (kbd "<s-up>") 'cider-repl-backward-input)
-  (define-key cider-repl-mode-map (kbd "<s-down>") 'cider-repl-forward-input)
-  (define-key cider-repl-mode-map (kbd "C-c p") 'cider-repl-toggle-pretty-printing)
-  (define-key cider-repl-mode-map [f8] 'cider-switch-to-last-clojure-buffer))
+  (define-key cider-mode-map      (kbd "C-c C-k")      'cider-save-load-switch-to-repl-set-ns)
+  (define-key cider-mode-map      [f8]                 'cider-save-load-switch-to-repl-set-ns)
+  (define-key cider-mode-map      (kbd "<M-s-down>")   'cider-eval-last-sexp)
+  (define-key cider-mode-map      (kbd "<C-M-s-down>") 'cider-eval-last-sexp)
+  (define-key cider-mode-map      [f9]                 'cider-eval-last-sexp)
+  (define-key cider-mode-map      (kbd "C-c C-d")      'ac-nrepl-popup-doc)
+
+  (define-key cider-repl-mode-map (kbd "<s-up>")       'cider-repl-backward-input)
+  (define-key cider-repl-mode-map (kbd "<s-down>")     'cider-repl-forward-input)
+  (define-key cider-repl-mode-map (kbd "C-c p")        'cider-repl-toggle-pretty-printing)
+  (define-key cider-repl-mode-map [f8]                 'cider-switch-to-last-clojure-buffer))
 
 (add-hook 'cider-mode-hook 'cider-custom-keys)
 
@@ -395,9 +401,9 @@ Leave one space or none, according to the context."
 ;; C-c SPC and C-c C-SPC are ace-jump-word-mode
 ;; C-u C-c SPC and C-u C-c C-SPC and s-SPC are ace-jump-char-mode
 ;; C-u C-u C-c SPC and C-u C-u C-c C-SPC are ace-jump-line-mode
-(global-set-key (kbd "C-c SPC") 'ace-jump-mode)
+(global-set-key (kbd "C-c SPC")   'ace-jump-mode)
 (global-set-key (kbd "C-c C-SPC") 'ace-jump-mode)
-(global-set-key (kbd "s-SPC") 'ace-jump-char-mode)
+(global-set-key (kbd "s-SPC")     'ace-jump-char-mode)
 
 
 (autoload 'markdown-mode "markdown-mode"
