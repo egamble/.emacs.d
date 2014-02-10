@@ -73,7 +73,7 @@
     (global-set-key (kbd "s-z") 'undo)
     (global-set-key (kbd "s-q") 'save-buffers-kill-terminal)))
 
-(global-set-key [f5] 'revert-buffer)
+(global-set-key [f7]  'revert-buffer)
 (global-set-key [f12] 'other-window)
 
 (global-set-key (kbd "<s-right>") 'other-window)
@@ -255,6 +255,20 @@ it to the beginning of the line."
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 
+(defun toggle-window-dedicated ()
+  "Toggle whether the current active window is dedicated or not"
+  (interactive)
+  (message
+   (if (let (window (get-buffer-window (current-buffer)))
+         (set-window-dedicated-p window
+                                 (not (window-dedicated-p window))))
+     "Window '%s' is dedicated"
+     "Window '%s' is normal")
+   (current-buffer)))
+
+(global-set-key [f11] 'toggle-window-dedicated)
+
+
 ;; display pretty lambdas
 (font-lock-add-keywords 'emacs-lisp-mode
     '(("(\\(lambda\\)\\>" (0 (prog1 ()
@@ -272,13 +286,6 @@ it to the beginning of the line."
 (add-hook 'clojure-mode-hook 'clj-pretty-fn)
 (add-hook 'cider-repl-mode-hook 'clj-pretty-fn)
 
-(defun ensure-three-windows ()
-  (let ((c (length (window-list))))
-    (cond ((eq c 1) (progn (split-window-horizontally)
-                           (ensure-three-windows)))
-          ((eq c 2) (progn (other-window 1)
-                           (split-window-vertically)
-                           (other-window -1))))))
 
 ;; Temporary until the real function is fixed so it doesn't throw an error.
 (defun nrepl-current-connection-buffer ()
@@ -287,11 +294,41 @@ it to the beginning of the line."
       nrepl-connection-buffer
       (car (nrepl-connection-buffers))))
 
+
 (defvar repl-ns nil)
+
+(defun cider-save-load-switch-to-repl-set-ns ()
+  "Save the buffer, load the Clojure code, switch to the REPL, set the namespace."
+  (interactive)
+  (save-buffer)
+  (cider-load-current-buffer)
+  (let* ((ns (cider-current-ns))
+         (arg (when (not (equal repl-ns ns))
+                (setq repl-ns ns)
+                t)))
+    (cider-switch-to-repl-buffer arg)))
+
+
+(defun ensure-four-windows ()
+  (let ((c (length (window-list))))
+    (cond ((eq c 1) (progn (split-window-horizontally)
+                           (ensure-four-windows)))
+          ((eq c 2) (progn (other-window 1)
+                           (split-window-vertically)
+                           (other-window -1)
+                           (ensure-four-windows)))
+          ((eq c 3) (progn (other-window 1)
+                           (split-window-vertically)
+                           (other-window -1))))))
+
 
 (defun start-cider ()
   (interactive)
-  (ensure-three-windows)
+  (ensure-four-windows)
+
+  ;; Undedicate all windows.
+  (dolist (w (window-list))
+    (set-window-dedicated-p w nil))
 
   ;; Any other window with the current buffer is switched to something else, so post-start-cider won't get confused.
   (let ((ws (get-buffer-window-list (current-buffer))))
@@ -305,22 +342,13 @@ it to the beginning of the line."
   (setq repl-ns nil)
   (cider-jack-in))
 
-(defun cider-save-load-switch-to-repl-set-ns ()
-  (interactive)
-  (save-buffer)
-  (cider-load-current-buffer)
-  (let* ((ns (cider-current-ns))
-         (arg (when (not (equal repl-ns ns))
-                (setq repl-ns ns)
-                t)))
-    (cider-switch-to-repl-buffer arg)))
 
 ;; Run this after start-cider.
 ;; 1. Tries to move the REPL to the lower right window.
 ;; 2. Puts the nrepl-server buffer above the REPL window.
 ;; 3. Loads the Clojure buffer and sets the namespace in the REPL.
 ;; 4. Goes back to the Clojure window.
-(defun post-start-cider ()
+(defun after-start-cider ()
   (interactive)
 
   ;; Select the REPL window if it's not already selected.
@@ -336,6 +364,7 @@ it to the beginning of the line."
                       "cider" "nrepl-server"
                       (buffer-name repl-buf))))
 
+    ;; From the REPL window, switch to the Clojure window.
     (cider-switch-to-last-clojure-buffer)
 
     ;; Switch the REPL window to some other buffer, in case there are more than three windows and the REPL is in the wrong one.
@@ -345,21 +374,36 @@ it to the beginning of the line."
     (other-window -1)
     (switch-to-buffer repl-buf)
 
+    ;; Lock the REPL window to the REPL buffer.
+    (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
+
     ;; Put the server buffer in the window before the REPL, generally just above it.
     (other-window -1)
     (switch-to-buffer server-buf)
 
+    ;; Lock the server window to the server buffer.
+    (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
+
     ;; Select the REPL window again.
     (other-window 1))
 
-  ;; Go to the Clojure window to load it, which puts us in the REPL window (and sets the NS), then go back to the Clojure window.
+  ;; Go to the Clojure window and load the Clojure code (which goes back to the REPL window and sets the NS) then go back to the Clojure window.
   (cider-switch-to-last-clojure-buffer)
   (cider-save-load-switch-to-repl-set-ns)
   (cider-eval-and-get-value "(clojure.core/use 'clojure.repl)") ; so we can use e.g. the source and doc functions
   (cider-switch-to-last-clojure-buffer))
 
-(global-set-key (kbd "s-=") 'start-cider)
-(global-set-key (kbd "s-+") 'post-start-cider)
+
+(defun start-cider-or-after-start ()
+  "If the current buffer is not a Cider buffer (such as the REPL), run start-cider.
+  Otherwise run after-start-cider, which organizes the windows, loads the code in the starting buffer, sets the namespace in the REPL, and returns to the starting buffer."
+  (interactive)
+  (if (string-match "cider" (buffer-name (current-buffer)))
+    (after-start-cider)
+    (start-cider)))
+
+(global-set-key (kbd "s-=") 'start-cider-or-after-start)
+
 
 ;; Also remember:
 ;; C-c C-z switches back and forth between the REPL and the last Clojure buffer
@@ -369,7 +413,7 @@ it to the beginning of the line."
 ;; C-up, C-down and s-up, s-down go backward and forward in REPL history
 (defun cider-custom-keys ()
   (define-key cider-mode-map      (kbd "C-c C-k")      'cider-save-load-switch-to-repl-set-ns)
-  (define-key cider-mode-map      [f8]                 'cider-save-load-switch-to-repl-set-ns)
+  (define-key cider-mode-map      [f10]                'cider-save-load-switch-to-repl-set-ns)
   (define-key cider-mode-map      (kbd "<M-s-down>")   'cider-eval-last-sexp)
   (define-key cider-mode-map      (kbd "<C-M-s-down>") 'cider-eval-last-sexp)
   (define-key cider-mode-map      [f9]                 'cider-eval-last-sexp)
@@ -378,7 +422,7 @@ it to the beginning of the line."
   (define-key cider-repl-mode-map (kbd "<s-up>")       'cider-repl-backward-input)
   (define-key cider-repl-mode-map (kbd "<s-down>")     'cider-repl-forward-input)
   (define-key cider-repl-mode-map (kbd "C-c p")        'cider-repl-toggle-pretty-printing)
-  (define-key cider-repl-mode-map [f8]                 'cider-switch-to-last-clojure-buffer))
+  (define-key cider-repl-mode-map [f10]                'cider-switch-to-last-clojure-buffer))
 
 (add-hook 'cider-mode-hook 'cider-custom-keys)
 
@@ -394,7 +438,7 @@ Leave one space or none, according to the context."
   (insert ?\s)
   (fixup-whitespace))
 
-(global-set-key (kbd "s-6") 'squeeze-whitespace)
+(global-set-key (kbd "<s-backspace>") 'squeeze-whitespace)
 
 
 (require 'ace-jump-mode)
