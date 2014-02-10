@@ -396,7 +396,8 @@ it to the beginning of the line."
 
 (defun start-cider-or-after-start ()
   "If the current buffer is not a Cider buffer (such as the REPL), run start-cider.
-  Otherwise run after-start-cider, which organizes the windows, loads the code in the starting buffer, sets the namespace in the REPL, and returns to the starting buffer."
+Otherwise run after-start-cider, which organizes the windows, loads the code from the
+starting buffer, sets the namespace in the REPL, and returns to the starting buffer."
   (interactive)
   (if (string-match "cider" (buffer-name (current-buffer)))
     (after-start-cider)
@@ -425,6 +426,17 @@ it to the beginning of the line."
   (define-key cider-repl-mode-map [f10]                'cider-switch-to-last-clojure-buffer))
 
 (add-hook 'cider-mode-hook 'cider-custom-keys)
+
+
+;; (nrepl-project-directory-for (or project (nrepl-current-dir)))
+
+;; Recursively generate tags for all *.clj files, creating tags for def* and namespaces
+;; TODO: start at level of project.clj for whatever the current source file is, putting the TAGS file there
+;; (defun create-clj-tags (dir-name)
+;;  "Create tags file."
+;;  (interactive "Directory: ")
+;;  (shell-command
+;;   (format "find . \! -name '.*' -name '*.clj' | xargs etags --regex='/[ \t\(]*def[a-z]* \([a-z->!]+\)/\1/' --regex='/[ \t\(]*ns \([a-z.]+\)/\1/'"))
 
 
 (defun squeeze-whitespace ()
@@ -461,14 +473,6 @@ Leave one space or none, according to the context."
   "Major mode for editing JSON files" t)
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
 
-
-;; Recursively generate tags for all *.clj files, creating tags for def* and namespaces
-;; TODO: start at level of project.clj for whatever the current source file is, putting the TAGS file there
-;; (defun create-clj-tags (dir-name)
-;;  "Create tags file."
-;;  (interactive "Directory: ")
-;;  (shell-command
-;;   (format "find . \! -name '.*' -name '*.clj' | xargs etags --regex='/[ \t\(]*def[a-z]* \([a-z->!]+\)/\1/' --regex='/[ \t\(]*ns \([a-z.]+\)/\1/'"))
 
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
