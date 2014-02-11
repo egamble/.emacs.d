@@ -52,55 +52,55 @@
 
 (if (eq system-type 'darwin)
   (progn
-    (global-set-key (kbd "<s-wheel-up>") 'text-scale-increase)
-    (global-set-key (kbd "<s-wheel-down>") 'text-scale-decrease))
+    (global-set-key (kbd "<s-wheel-up>")       'text-scale-increase)
+    (global-set-key (kbd "<s-wheel-down>")     'text-scale-decrease))
 
   ;; linux
   (progn
-    (global-set-key (kbd "<s-mouse-4>") 'text-scale-increase)
+    (global-set-key (kbd "<s-mouse-4>")        'text-scale-increase)
     (global-set-key (kbd "<s-double-mouse-4>") 'text-scale-increase)
     (global-set-key (kbd "<s-triple-mouse-4>") 'text-scale-increase)
-    (global-set-key (kbd "<s-mouse-5>") 'text-scale-decrease)
+    (global-set-key (kbd "<s-mouse-5>")        'text-scale-decrease)
     (global-set-key (kbd "<s-double-mouse-5>") 'text-scale-decrease)
     (global-set-key (kbd "<s-triple-mouse-5>") 'text-scale-decrease)
 
-    (global-set-key (kbd "s-s") 'save-buffer)
-    (global-set-key (kbd "s-x") 'clipboard-kill-region)
-    (global-set-key (kbd "s-c") 'clipboard-kill-ring-save)
-    (global-set-key (kbd "s-v") 'clipboard-yank)
-    (global-set-key (kbd "s-f") 'isearch-forward)
-    (global-set-key (kbd "s-g") 'isearch-repeat-forward)
-    (global-set-key (kbd "s-z") 'undo)
-    (global-set-key (kbd "s-q") 'save-buffers-kill-terminal)))
+    (global-set-key (kbd "s-s")                'save-buffer)
+    (global-set-key (kbd "s-x")                'clipboard-kill-region)
+    (global-set-key (kbd "s-c")                'clipboard-kill-ring-save)
+    (global-set-key (kbd "s-v")                'clipboard-yank)
+    (global-set-key (kbd "s-f")                'isearch-forward)
+    (global-set-key (kbd "s-g")                'isearch-repeat-forward)
+    (global-set-key (kbd "s-z")                'undo)
+    (global-set-key (kbd "s-q")                'save-buffers-kill-terminal)))
 
-(global-set-key [f7]  'revert-buffer)
-(global-set-key [f12] 'other-window)
+(global-set-key [f7]                       'revert-buffer)
+(global-set-key [f12]                      'other-window)
 
-(global-set-key (kbd "<s-right>") 'other-window)
-(global-set-key (kbd "<s-left>") '(lambda () "backwards other-window" (interactive) (other-window -1)))
+(global-set-key (kbd "<s-right>")          'other-window)
+(global-set-key (kbd "<s-left>")           '(lambda () "backwards other-window" (interactive) (other-window -1)))
 
-(global-set-key (kbd "C-c c") 'toggle-truncate-lines)
-(global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-c c")              'toggle-truncate-lines)
+(global-set-key (kbd "C-c ;")              'comment-or-uncomment-region)
 
 ;; keyboard macro key bindings
-(global-set-key (kbd "C-,")        'kmacro-start-macro-or-insert-counter)
-(global-set-key (kbd "C-.")        'kmacro-end-or-call-macro)
+(global-set-key (kbd "C-,")                'kmacro-start-macro-or-insert-counter)
+(global-set-key (kbd "C-.")                'kmacro-end-or-call-macro)
 
 (defun find-init-file ()
   "Visit init.el."
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
-(global-set-key (kbd "s-i") 'find-init-file)
-(global-set-key (kbd "s-I") 'eval-buffer)
+(global-set-key (kbd "s-i")                'find-init-file)
+(global-set-key (kbd "s-I")                'eval-buffer)
 
-(global-set-key (kbd "s-{") 'shrink-window-horizontally)
-(global-set-key (kbd "s-}") 'enlarge-window-horizontally)
-(global-set-key (kbd "s-[") 'shrink-window)
-(global-set-key (kbd "s-]") 'enlarge-window)
+(global-set-key (kbd "s-{")                'shrink-window-horizontally)
+(global-set-key (kbd "s-}")                'enlarge-window-horizontally)
+(global-set-key (kbd "s-[")                'shrink-window)
+(global-set-key (kbd "s-]")                'enlarge-window)
 
-(global-set-key (kbd "C-s-s") 'isearch-forward-symbol-at-point)
-(global-set-key (kbd "<C-s-268632083>") 'isearch-forward-symbol-at-point) ; OS X turns C-s-s into <C-s-268632083>
+(global-set-key (kbd "C-s-s")              'isearch-forward-symbol-at-point)
+(global-set-key (kbd "<C-s-268632083>")    'isearch-forward-symbol-at-point) ; OS X turns C-s-s into <C-s-268632083>
 
 
 ;; load color-theme
@@ -139,8 +139,8 @@
 (ac-config-default)
 
 (require 'ac-nrepl)
-(add-hook 'cider-mode-hook 'ac-nrepl-setup)
-(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+(add-hook 'cider-mode-hook      'ac-nrepl-setup)
+(add-hook 'cider-mode-hook      'cider-turn-on-eldoc-mode)
 (add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
 (eval-after-load "auto-complete"
   '(add-to-list 'ac-modes 'cider-repl-mode))
