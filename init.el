@@ -309,6 +309,13 @@ it to the beginning of the line."
     (cider-switch-to-repl-buffer arg)))
 
 
+(defun cider-save-eval-last-sexp ()
+  "Save the buffer, eval the sexp before point."
+  (interactive)
+  (save-buffer)
+  (cider-eval-last-sexp))
+
+
 (defun ensure-four-windows ()
   (let ((c (length (window-list))))
     (cond ((eq c 1) (progn (split-window-horizontally)
@@ -415,9 +422,9 @@ starting buffer, sets the namespace in the REPL, and returns to the starting buf
 (defun cider-custom-keys ()
   (define-key cider-mode-map      (kbd "C-c C-k")      'cider-save-load-switch-to-repl-set-ns)
   (define-key cider-mode-map      [f10]                'cider-save-load-switch-to-repl-set-ns)
-  (define-key cider-mode-map      (kbd "<M-s-down>")   'cider-eval-last-sexp)
-  (define-key cider-mode-map      (kbd "<C-M-s-down>") 'cider-eval-last-sexp)
-  (define-key cider-mode-map      [f9]                 'cider-eval-last-sexp)
+  (define-key cider-mode-map      (kbd "<M-s-down>")   'cider-save-eval-last-sexp)
+  (define-key cider-mode-map      (kbd "<C-M-s-down>") 'cider-save-eval-last-sexp)
+  (define-key cider-mode-map      [f9]                 'cider-save-eval-last-sexp)
   (define-key cider-mode-map      (kbd "C-c C-d")      'ac-nrepl-popup-doc)
 
   (define-key cider-repl-mode-map (kbd "<s-up>")       'cider-repl-backward-input)
