@@ -305,7 +305,7 @@ it to the beginning of the line."
   (let* ((ns (cider-current-ns))
          (arg (when (not (equal repl-ns ns))
                 (setq repl-ns ns)
-                t)))
+                4)))
     (cider-switch-to-repl-buffer arg)))
 
 
