@@ -316,6 +316,15 @@ it to the beginning of the line."
   (cider-eval-last-sexp))
 
 
+(defun save-insert-last-sexp-in-repl ()
+  "Save the buffer, insert the sexp before point into the REPL buffer and switch to it."
+  (interactive)
+  (save-buffer)
+  (let ((s (cider-last-sexp)))
+    (cider-switch-to-repl-buffer)
+    (insert s)))
+
+
 (defun ensure-four-windows ()
   (let ((c (length (window-list))))
     (cond ((eq c 1) (progn (split-window-horizontally)
@@ -425,6 +434,7 @@ starting buffer, sets the namespace in the REPL, and returns to the starting buf
   (define-key cider-mode-map      (kbd "<M-s-down>")   'cider-save-eval-last-sexp)
   (define-key cider-mode-map      (kbd "<C-M-s-down>") 'cider-save-eval-last-sexp)
   (define-key cider-mode-map      [f9]                 'cider-save-eval-last-sexp)
+  (define-key cider-mode-map      (kbd "<s-f9>")       'save-insert-last-sexp-in-repl)
   (define-key cider-mode-map      (kbd "C-c C-d")      'ac-nrepl-popup-doc)
 
   (define-key cider-repl-mode-map (kbd "<s-up>")       'cider-repl-backward-input)
