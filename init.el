@@ -447,7 +447,8 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
             tags-table)))
 
 ;; cider rebinds M-., so make an alternative key binding for find-tag
-(global-set-key (kbd "M-s-≥") 'find-tag)
+(global-set-key (kbd "M-s-.") 'find-tag)
+(global-set-key (kbd "M-s-≥") 'find-tag) ; OS X turns M-s-. into M-s-≥
 
 
 ;; Also remember:
