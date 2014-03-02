@@ -35,7 +35,11 @@
 ;; personally, I can do without all those ~ files
 (setq make-backup-files nil)
 
-(add-hook 'before-save-hook 'whitespace-cleanup)
+;; mostly for revert-buffer I just want to type y, not yes
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; just shut up and reload the tags file!
+(setq tags-revert-without-query 1)
 
 ;; undo/redo pane configuration with C-c left/right arrow
 (winner-mode 1)
@@ -422,6 +426,30 @@ starting buffer, sets the namespace in the REPL, and returns to the starting buf
 (global-set-key (kbd "s-=") 'start-cider-or-after-start)
 
 
+(defun create-clj-tags (&optional arg)
+ "Create tags for def* and namespaces for all *.clj files starting
+at the level of project.clj for whatever the current source file is.
+Writes to the TAGS file at ~/.emacs.d/TAGS.
+If the argument is 1 (the default), appends to the TAGS file, otherwise overwrites."
+ (interactive "p")
+ (let ((append-option (if (eq 1 arg) "-a" ""))
+       (tags-table "~/.emacs.d/TAGS"))
+   (shell-command
+    (format "find %s \! -name '.*' -name '*.clj' | xargs etags %s -o %s --regex='/[ \t\\(]*def[a-z]* \\([a-z->!?]+\\)/\\1/' --regex='/[ \t\\(]*ns \\([a-z.]+\\)/\\1/'"
+            (directory-file-name ; remove final slash
+             (nrepl-project-directory-for (nrepl-current-dir)))
+            append-option
+            tags-table))
+   (visit-tags-table tags-table)
+   (message (if (eq 1 arg)
+                "Appended to %s"
+                "Wrote new %s")
+            tags-table)))
+
+;; cider rebinds M-., so make an alternative key binding for find-tag
+(global-set-key (kbd "M-s-≥") 'find-tag)
+
+
 ;; Also remember:
 ;; C-c C-z switches back and forth between the REPL and the last Clojure buffer
 ;; [f9], M-s-down and C-c C-e evaluate expression preceding point
@@ -436,6 +464,7 @@ starting buffer, sets the namespace in the REPL, and returns to the starting buf
   (define-key cider-mode-map      [f9]                 'cider-save-eval-last-sexp)
   (define-key cider-mode-map      (kbd "<s-f9>")       'save-insert-last-sexp-in-repl)
   (define-key cider-mode-map      (kbd "C-c C-d")      'ac-nrepl-popup-doc)
+  (define-key cider-mode-map      [f8]                 'create-clj-tags)
 
   (define-key cider-repl-mode-map (kbd "<s-up>")       'cider-repl-backward-input)
   (define-key cider-repl-mode-map (kbd "<s-down>")     'cider-repl-forward-input)
@@ -443,17 +472,6 @@ starting buffer, sets the namespace in the REPL, and returns to the starting buf
   (define-key cider-repl-mode-map [f10]                'cider-switch-to-last-clojure-buffer))
 
 (add-hook 'cider-mode-hook 'cider-custom-keys)
-
-
-;; (nrepl-project-directory-for (or project (nrepl-current-dir)))
-
-;; Recursively generate tags for all *.clj files, creating tags for def* and namespaces
-;; TODO: start at level of project.clj for whatever the current source file is, putting the TAGS file there
-;; (defun create-clj-tags (dir-name)
-;;  "Create tags file."
-;;  (interactive "Directory: ")
-;;  (shell-command
-;;   (format "find . \! -name '.*' -name '*.clj' | xargs etags --regex='/[ \t\(]*def[a-z]* \([a-z->!]+\)/\1/' --regex='/[ \t\(]*ns \([a-z.]+\)/\1/'"))
 
 
 (defun squeeze-whitespace ()
