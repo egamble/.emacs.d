@@ -194,6 +194,14 @@
       '("orange1" "yellow1" "greenyellow" "green1"
         "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
 
+
+;; In addition to the following commands, remember these useful paredit commands:
+;; paredit-forward-slurp-sexp <C-right>, C-)
+;; paredit-forward-barf-sexp  <C-left>, C-}
+;; paredit-raise-sexp         M-r
+;; paredit-wrap-round         M-(
+;; paredit-join-sexps         M-J
+
 (dolist (mode '(clojure cider cider-repl emacs-lisp lisp scheme lisp-interaction))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
@@ -515,7 +523,7 @@ Leave one space or none, according to the context."
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
-  '(default ((t (:height 140)))))
+  '(default ((t (:height 150)))))
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
