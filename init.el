@@ -345,18 +345,20 @@ it to the beginning of the line."
                            (split-window-vertically)
                            (other-window -1)
                            (ensure-four-windows)))
-          ((eq c 3) (progn (other-window 1)
+          ((eq c 3) (progn (other-window 2)
                            (split-window-vertically)
-                           (other-window -1))))))
+                           (other-window -2))))))
 
 
 (defun start-cider ()
   (interactive)
-  (ensure-four-windows)
 
   ;; Undedicate all windows.
   (dolist (w (window-list))
     (set-window-dedicated-p w nil))
+
+  (delete-other-windows)
+  (ensure-four-windows)
 
   ;; Any other window with the current buffer is switched to something else, so post-start-cider won't get confused.
   (let ((ws (get-buffer-window-list (current-buffer))))
@@ -411,6 +413,9 @@ it to the beginning of the line."
 
     ;; Lock the server window to the server buffer.
     (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
+
+    ;; Shrink the server window to window-min-height.
+    (shrink-window 100)
 
     ;; Select the REPL window again.
     (other-window 1))
