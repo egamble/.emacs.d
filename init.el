@@ -353,24 +353,29 @@ it to the beginning of the line."
 (defun start-cider ()
   (interactive)
 
-  ;; Undedicate all windows.
-  (dolist (w (window-list))
-    (set-window-dedicated-p w nil))
+  (if (string-match ".clj" (buffer-name (current-buffer)))
+      (progn
+        ;; Undedicate all windows.
+        (dolist (w (window-list))
+          (set-window-dedicated-p w nil))
 
-  (delete-other-windows)
-  (ensure-four-windows)
+        (delete-other-windows)
+        (ensure-four-windows)
 
-  ;; Any other window with the current buffer is switched to something else, so post-start-cider won't get confused.
-  (let ((ws (get-buffer-window-list (current-buffer))))
-    (dolist (w (cdr ws))
-      (set-window-buffer w "*Messages*")))
+        ;; Any other window with the current buffer is switched to something else, so after-start-cider won't get confused.
+        (let ((ws (get-buffer-window-list (current-buffer))))
+          (dolist (w (cdr ws))
+            (set-window-buffer w "*Messages*")))
 
-  (dolist (connection nrepl-connection-list)
-    (when connection
-      (nrepl-close connection)))
-  (cider-close-ancilliary-buffers)
-  (setq repl-ns nil)
-  (cider-jack-in))
+        (dolist (connection nrepl-connection-list)
+          (when connection
+            (nrepl-close connection)))
+        (cider-close-ancilliary-buffers)
+        (setq repl-ns nil)
+        (add-hook 'nrepl-connected-hook 'after-start-cider)
+        (cider-jack-in))
+
+    (message "Buffer %s is not a Clojure source file" (current-buffer))))
 
 
 ;; Run this after start-cider.
@@ -380,6 +385,8 @@ it to the beginning of the line."
 ;; 4. Goes back to the Clojure window.
 (defun after-start-cider ()
   (interactive)
+
+  (remove-hook 'nrepl-connected-hook 'after-start-cider)
 
   ;; Select the REPL window if it's not already selected.
   (let ((ws (window-list)))
@@ -427,16 +434,7 @@ it to the beginning of the line."
   (cider-switch-to-last-clojure-buffer))
 
 
-(defun start-cider-or-after-start ()
-  "If the current buffer is not a Cider buffer (such as the REPL), run start-cider.
-Otherwise run after-start-cider, which organizes the windows, loads the code from the
-starting buffer, sets the namespace in the REPL, and returns to the starting buffer."
-  (interactive)
-  (if (string-match "cider" (buffer-name (current-buffer)))
-    (after-start-cider)
-    (start-cider)))
-
-(global-set-key (kbd "s-=") 'start-cider-or-after-start)
+(global-set-key (kbd "s-=") 'start-cider)
 
 
 (defun create-clj-tags (&optional arg)
