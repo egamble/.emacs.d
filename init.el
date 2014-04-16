@@ -378,9 +378,9 @@ it to the beginning of the line."
     (message "Buffer %s is not a Clojure source file" (current-buffer))))
 
 
-;; Run this after start-cider.
+;; Run as an nrepl-connected-hook after start-cider.
 ;; 1. Tries to move the REPL to the lower right window.
-;; 2. Puts the nrepl-server buffer above the REPL window.
+;; 2. Puts the nrepl-server buffer in the window above the REPL window and shrinks the server window.
 ;; 3. Loads the Clojure buffer and sets the namespace in the REPL.
 ;; 4. Goes back to the Clojure window.
 (defun after-start-cider ()
