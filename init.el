@@ -486,6 +486,21 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
 (add-hook 'cider-mode-hook 'cider-custom-keys)
 
 
+;; Remember:
+;; C-c C-t switches between a Clojure buffer and its corresponding test buffer
+;; C-c C-, and C-c , run all tests from either the Clojure buffer or its test buffer
+;; C-c k clears highlighted failures
+(add-hook 'cider-mode-hook 'clojure-test-mode)
+
+
+(defun clojure-enable-cider ()
+  "Turn on CIDER mode (see command `cider-mode'). Useful in hooks.
+Modified from the definition in cider-interaction.el to not work for project.clj."
+  (when (not (string-match "project.clj" (buffer-name (current-buffer))))
+    (cider-mode 1)
+    (setq next-error-function 'cider-jump-to-compilation-error)))
+
+
 (setq cider-repl-history-file "~/.emacs.d/cider-hist.dat")
 
 
