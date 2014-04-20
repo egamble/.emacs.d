@@ -353,7 +353,9 @@ it to the beginning of the line."
 (defun start-cider ()
   (interactive)
 
-  (if (string-match ".clj" (buffer-name (current-buffer)))
+  (if (let ((bn (buffer-name (current-buffer))))
+        (and (string-match ".clj" bn)
+             (not (string-match "project.clj" bn))))
       (progn
         ;; Undedicate all windows.
         (dolist (w (window-list))
