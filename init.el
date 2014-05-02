@@ -475,7 +475,7 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
                 (cider-current-ns))
     (sleep-for 0.1)
     (with-current-buffer temp-buffer
-     (goto-char (point-min))
+      (goto-char (point-min))
       (let ((start (re-search-forward "(def\\S-*\\s-+\\S-+\\s-+\"" (point-max) t)))
         (when start
           (let ((stop (re-search-forward "\\([^\\\\\"]*\\\\.\\)*[^\"]*\"")))
@@ -485,6 +485,9 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
 "))))))
     (apply #'delete-region defun-region)
     (insert-buffer-substring temp-buffer)
+    (paredit-backward)
+    (paredit-reindent-defun)
+    (paredit-forward)
     (kill-buffer temp-buffer)))
 
 
