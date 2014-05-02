@@ -464,9 +464,21 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
 (global-set-key (kbd "M-s-≥") 'find-tag) ; OS X turns M-s-. into M-s-≥
 
 
+(defun cider-pprint-defun-at-point-in-place ()
+  "Pretty-print in place the current top-level form."
+  (interactive)
+  (let* ((defun-region (cider--region-for-defun-at-point))
+         (form (apply #'buffer-substring-no-properties defun-region)))
+    (apply #'delete-region defun-region)
+    (cider-eval (format "(clojure.pprint/with-pprint-dispatch clojure.pprint/code-dispatch (clojure.pprint/pprint '%s))" form)
+                (cider-popup-eval-out-handler (current-buffer))
+                (cider-current-ns))))
+
+
 ;; Also remember:
 ;; C-c C-z switches back and forth between the REPL and the last Clojure buffer
 ;; [f9], M-s-down and C-c C-e evaluate expression preceding point
+;; C-c C-p cider-pprint-eval-last-sexp
 ;; C-c C-r evaluates region
 ;; C-C C-c evaluates def at point
 ;; C-up, C-down and s-up, s-down go backward and forward in REPL history
@@ -479,6 +491,7 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
   (define-key cider-mode-map      (kbd "<s-f9>")       'save-insert-last-sexp-in-repl)
   (define-key cider-mode-map      (kbd "C-c C-d")      'ac-nrepl-popup-doc)
   (define-key cider-mode-map      [f8]                 'create-clj-tags)
+  (define-key cider-mode-map      (kbd "C-M-q")        'cider-pprint-defun-at-point-in-place)
 
   (define-key cider-repl-mode-map (kbd "<s-up>")       'cider-repl-backward-input)
   (define-key cider-repl-mode-map (kbd "<s-down>")     'cider-repl-forward-input)
@@ -513,7 +526,7 @@ Leave one space or none, according to the context."
   (skip-chars-backward " \t\r\n\f")
   (set-mark (point))
   (skip-chars-forward " \t\r\n\f")
-  (kill-region (point) (mark))
+  (delete-region (point) (mark))
   (insert ?\s)
   (fixup-whitespace))
 
