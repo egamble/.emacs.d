@@ -476,6 +476,8 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
     (sleep-for 0.1)
     (with-current-buffer temp-buffer
       (goto-char (point-min))
+      ;; When there's a doc string, undo the unfortunate replacement
+      ;; of newlines with "\n"s.
       (let ((start (re-search-forward "(def\\S-*\\s-+\\S-+\\s-+\"" (point-max) t)))
         (when start
           (let ((stop (re-search-forward "\\([^\\\\\"]*\\\\.\\)*[^\"]*\"")))
