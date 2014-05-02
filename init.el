@@ -465,7 +465,7 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
 
 
 (defun cider-pprint-defun-at-point-in-place ()
-  "Pretty-print in place the current top-level form."
+  "Pretty-print the current top-level form in place."
   (interactive)
   (let* ((defun-region (cider--region-for-defun-at-point))
          (form (apply #'buffer-substring-no-properties defun-region)))
