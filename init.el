@@ -468,11 +468,24 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
   "Pretty-print the current top-level form in place."
   (interactive)
   (let* ((defun-region (cider--region-for-defun-at-point))
-         (form (apply #'buffer-substring-no-properties defun-region)))
-    (apply #'delete-region defun-region)
+         (form (apply #'buffer-substring-no-properties defun-region))
+         (temp-buffer (generate-new-buffer "temp")))
     (cider-eval (format "(clojure.pprint/with-pprint-dispatch clojure.pprint/code-dispatch (clojure.pprint/pprint '%s))" form)
-                (cider-popup-eval-out-handler (current-buffer))
-                (cider-current-ns))))
+                (cider-popup-eval-out-handler temp-buffer)
+                (cider-current-ns))
+    (sleep-for 0.1)
+    (with-current-buffer temp-buffer
+     (goto-char (point-min))
+      (let ((start (re-search-forward "(def\\S-*\\s-+\\S-+\\s-+\"" (point-max) t)))
+        (when start
+          (let ((stop (re-search-forward "\\([^\\\\\"]*\\\\.\\)*[^\"]*\"")))
+            (goto-char start)
+            (while (re-search-forward "\\\\n" stop t)
+              (replace-match "
+"))))))
+    (apply #'delete-region defun-region)
+    (insert-buffer-substring temp-buffer)
+    (kill-buffer temp-buffer)))
 
 
 ;; Also remember:
