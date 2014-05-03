@@ -202,6 +202,9 @@
 ;; paredit-wrap-round         M-(
 ;; paredit-join-sexps         M-J
 
+;; ...and this useful clojure-mode command:
+;; clojure-toggle-keyword-string C-:
+
 (dolist (mode '(clojure cider cider-repl emacs-lisp lisp scheme lisp-interaction))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
