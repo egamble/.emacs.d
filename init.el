@@ -471,29 +471,53 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
   "Pretty-print the current top-level form in place."
   (interactive)
   (let* ((defun-region (cider--region-for-defun-at-point))
-         (form (apply #'buffer-substring-no-properties defun-region))
-         (temp-buffer (generate-new-buffer "temp")))
-    (cider-eval (format "(clojure.pprint/with-pprint-dispatch clojure.pprint/code-dispatch (clojure.pprint/pprint '%s))" form)
-                (cider-popup-eval-out-handler temp-buffer)
-                (cider-current-ns))
-    (sleep-for 0.1)
-    (with-current-buffer temp-buffer
+         (orig-buffer (current-buffer))
+         (eval-out-buffer (generate-new-buffer "temp"))
+         (newline-marker "<n>")
+         (newline-pos-diff (1- (length newline-marker))))
+
+    (with-temp-buffer
+      (apply #'insert-buffer-substring-no-properties orig-buffer defun-region)
+
+      ;; Replace newlines with markers to allow their preservation
+      ;; through pprinting. Otherwise they become indistinguishable
+      ;; from "\n"s.
       (goto-char (point-min))
-      ;; When there's a doc string, undo the unfortunate replacement
-      ;; of newlines with "\n"s.
-      (let ((start (re-search-forward "(def\\S-*\\s-+\\S-+\\s-+\"" (point-max) t)))
-        (when start
-          (let ((stop (re-search-forward "\\([^\\\\\"]*\\\\.\\)*[^\"]*\"")))
-            (goto-char start)
-            (while (re-search-forward "\\\\n" stop t)
+      (while (re-search-forward "\"" (point-max) t)
+        (when (paredit-in-string-p)
+          (let ((stop (cdr (paredit-string-start+end-points))))
+            (while (re-search-forward "\n" stop t)
+              (replace-match newline-marker)
+              (setq stop (+ stop newline-pos-diff))))))
+
+      (let ((form (buffer-substring (point-min) (point-max))))
+        (cider-eval (format "(clojure.pprint/with-pprint-dispatch clojure.pprint/code-dispatch (clojure.pprint/pprint '%s))" form)
+                    (cider-popup-eval-out-handler eval-out-buffer)
+                    (cider-current-ns))))
+
+    ;; OPTIMIZE: I thought maybe putting all the following stuff in a
+    ;; done-handler would avoid the need to sleep, but it didn't work
+    ;; for some reason.
+    (sleep-for 0.1)
+
+    (with-current-buffer eval-out-buffer
+      (goto-char (point-min))
+
+      ;; Replace newline markers with newlines.
+      (while (re-search-forward "\"" (point-max) t)
+        (when (paredit-in-string-p)
+          (let ((stop (cdr (paredit-string-start+end-points))))
+            (while (re-search-forward newline-marker stop t)
               (replace-match "
-"))))))
+"
+                             )
+              (setq stop (- stop newline-pos-diff)))))))
+
     (apply #'delete-region defun-region)
-    (insert-buffer-substring temp-buffer)
-    (paredit-backward)
+    (insert-buffer eval-out-buffer)
     (paredit-reindent-defun)
     (paredit-forward)
-    (kill-buffer temp-buffer)))
+    (kill-buffer eval-out-buffer)))
 
 
 ;; Also remember:
