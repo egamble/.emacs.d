@@ -555,12 +555,16 @@ convention."
                        (while (search-forward backslash-marker (line-end-position) t)
                          (replace-match "\\\\"))
                        (goto-char (1- start))
-                       (when (and (= ?\; (char-after (+ 2 (point))))
-                                  (/= (point) (line-beginning-position))
-                                  ;; assumes spaces are used for indentation
-                                  (/= ?\  (char-before))
-                                  )
-                         (open-line 1)))
+                       (if (= ?\; (char-after (+ 2 (point))))
+                           ;; multiple semicolons
+                           (when (and (/= (point) (line-beginning-position))
+                                      ;; assumes spaces are used for indentation
+                                      (/= ?\s (char-before)))
+                             (open-line 1))
+                         ;; single semicolon
+                         (progn
+                           (skip-chars-backward " \n")
+                           (delete-region (point) start))))
 
               (while (search-forward newline-marker end t)
                 (replace-match "
