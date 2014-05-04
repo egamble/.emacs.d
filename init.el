@@ -495,12 +495,15 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
                     (cider-popup-eval-out-handler eval-out-buffer)
                     (cider-current-ns))))
 
-    ;; OPTIMIZE: I thought maybe putting all the following stuff in a
-    ;; done-handler would avoid the need to sleep, but it didn't work
-    ;; for some reason.
-    (sleep-for 0.1)
 
     (with-current-buffer eval-out-buffer
+      ;; OPTIMIZE: I thought maybe putting all the following stuff in
+      ;; a done-handler (by writing cider-popup-eval-out-done-handler)
+      ;; would avoid the need to sleep. The done-handler worked, but
+      ;; it still required a sleep afterward for some reason.
+      (while (= (point-min) (point-max))
+        (sleep-for 0.001))
+
       (goto-char (point-min))
 
       ;; Replace newline markers with newlines.
