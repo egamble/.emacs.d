@@ -468,33 +468,56 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
 
 
 (defun cider-pprint-defun-at-point-in-place ()
-  "Pretty-print the current top-level form in place."
+  "Pretty-print the current top-level form in place.
+Assumes comments follow the usual number-of-semicolons
+convention."
   (interactive)
   (let* ((defun-region (cider--region-for-defun-at-point))
          (orig-buffer (current-buffer))
          (eval-out-buffer (generate-new-buffer "temp"))
+         (comment-marker "<;>")
+         (comment-marker-len (length comment-marker))
          (newline-marker "<n>")
-         (newline-pos-diff (1- (length newline-marker))))
+         (newline-marker-len (length newline-marker))
+         (quote-marker "<q>")
+         (backslash-marker "<b>"))
 
     (with-temp-buffer
       (apply #'insert-buffer-substring-no-properties orig-buffer defun-region)
+      (lisp-mode)
 
       ;; Replace newlines with markers to allow their preservation
       ;; through pprinting. Otherwise they become indistinguishable
       ;; from "\n"s.
       (goto-char (point-min))
-      (while (re-search-forward "\"" (point-max) t)
+      (while (search-forward "\"" (point-max) t)
         (when (paredit-in-string-p)
-          (let ((stop (cdr (paredit-string-start+end-points))))
-            (while (re-search-forward "\n" stop t)
+          (let ((end (cdr (paredit-string-start+end-points))))
+            (while (search-forward "\n" end 1)
               (replace-match newline-marker)
-              (setq stop (+ stop newline-pos-diff))))))
+              (setq end (+ end newline-marker-len -1))))))
+
+      ;; Stringify comments with leading comment markers to preserve
+      ;; them through pprinting. Preserve quotes and backslashes with
+      ;; markers.
+      (goto-char (point-min))
+      (while (search-forward ";" (point-max) t)
+        (when (paredit-in-comment-p)
+          (backward-char)
+          (insert "\"")
+          (insert comment-marker)
+          (let ((start (point)))
+            (while (search-forward "\"" (line-end-position) t)
+              (replace-match quote-marker))
+            (goto-char start)
+            (while (search-forward "\\" (line-end-position) 1)
+              (replace-match backslash-marker)))
+          (insert "\"")))
 
       (let ((form (buffer-substring (point-min) (point-max))))
         (cider-eval (format "(clojure.pprint/with-pprint-dispatch clojure.pprint/code-dispatch (clojure.pprint/pprint '%s))" form)
                     (cider-popup-eval-out-handler eval-out-buffer)
                     (cider-current-ns))))
-
 
     (with-current-buffer eval-out-buffer
       ;; OPTIMIZE: I thought maybe putting all the following stuff in
@@ -504,17 +527,46 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
       (while (= (point-min) (point-max))
         (sleep-for 0.001))
 
-      (goto-char (point-min))
+      (lisp-mode)
 
-      ;; Replace newline markers with newlines.
-      (while (re-search-forward "\"" (point-max) t)
+      ;; Replace newline markers in strings with newlines.
+      ;; Un-stringify comments and un-preserve their quotes and
+      ;; backslashes. Add newlines before or after comments as needed.
+      ;; Assumes more than one semicolon means the comment should be
+      ;; on its own line.
+      (goto-char (point-min))
+      (while (search-forward "\"" (point-max) t)
         (when (paredit-in-string-p)
-          (let ((stop (cdr (paredit-string-start+end-points))))
-            (while (re-search-forward newline-marker stop t)
-              (replace-match "
+          (let* ((b (paredit-string-start+end-points))
+                 (start (car b))
+                 (end (cdr b)))
+            (if (search-forward comment-marker end t)
+
+                (progn (replace-match "")
+                       (delete-backward-char 1)
+                       (goto-char (- end comment-marker-len 1))
+                       (delete-forward-char 1)
+                       (when (/= (point) (line-end-position))
+                         (open-line 1))
+                       (goto-char start)
+                       (while (search-forward quote-marker (line-end-position) t)
+                         (replace-match "\""))
+                       (goto-char start)
+                       (while (search-forward backslash-marker (line-end-position) t)
+                         (replace-match "\\\\"))
+                       (goto-char (1- start))
+                       (when (and (= ?\; (char-after (+ 2 (point))))
+                                  (/= (point) (line-beginning-position))
+                                  ;; assumes spaces are used for indentation
+                                  (/= ?\  (char-before))
+                                  )
+                         (open-line 1)))
+
+              (while (search-forward newline-marker end t)
+                (replace-match "
 "
-                             )
-              (setq stop (- stop newline-pos-diff)))))))
+                               )
+                (setq end (- end newline-marker-len 1))))))))
 
     (apply #'delete-region defun-region)
     (insert-buffer eval-out-buffer)
@@ -607,7 +659,7 @@ Leave one space or none, according to the context."
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
-  '(default ((t (:height 140)))))
+  '(default ((t (:height 150)))))
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
