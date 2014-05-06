@@ -467,11 +467,12 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
 (global-set-key (kbd "M-s-≥") 'find-tag) ; OS X turns M-s-. into M-s-≥
 
 
-(defun cider-pprint-defun-at-point-in-place ()
+(defun cider-pprint-defun-at-point-in-place (&optional no-commas)
   "Pretty-print the current top-level form in place.
 Assumes comments follow the usual number-of-semicolons
-convention."
-  (interactive)
+convention. With an optional numeric argument, strips all
+commas."
+  (interactive "p")
   (let* ((defun-region (cider--region-for-defun-at-point))
          (orig-buffer (current-buffer))
          (eval-out-buffer (generate-new-buffer "temp"))
@@ -539,14 +540,13 @@ convention."
       (while (re-search-forward (concat "[ \n]*" post-comment-keyword) nil t)
         (replace-match ""))
 
-      ;; Strip out all commas not in strings because they'll get
-      ;; messed up by comment un-stringification and most people don't
-      ;; use them anyway.
-      (goto-char (point-min))
-      (while (search-forward "," nil t)
-        (when (not (paredit-in-string-p))
-          ;; Can't use replace-match because it's messed up by paredit-in-string-p.
-          (delete-backward-char 1)))
+      ;; Optionally strip out all commas not in strings.
+      (when no-commas
+        (goto-char (point-min))
+        (while (search-forward "," nil t)
+          (when (not (paredit-in-string-p))
+            ;; Can't use replace-match because it's messed up by paredit-in-string-p.
+            (delete-backward-char 1))))
 
       ;; Replace newline markers in strings with newlines.
       ;; Un-stringify comments and un-preserve their quotes and
@@ -565,12 +565,17 @@ convention."
                        (delete-backward-char 1)
                        (goto-char (- end comment-marker-len 1))
                        (delete-forward-char 1)
+                       (setq has-comma-after (= ?\, (char-after (point))))
+                       (when has-comma-after (delete-forward-char 1))
                        (when (/= (point) (line-end-position))
                          (open-line 1))
                        (goto-char start)
                        (progn
                          (skip-chars-backward " \n")
                          (delete-region (point) start))
+                       (if (and (= ?\, (char-before (point)))
+                                (not has-comma-after))
+                           (delete-backward-char 1))
                        (setq start (point))
                        (while (search-forward quote-marker (line-end-position) t)
                          (replace-match "\""))
