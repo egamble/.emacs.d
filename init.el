@@ -480,7 +480,8 @@ convention."
          (newline-marker "<n>")
          (newline-marker-len (length newline-marker))
          (quote-marker "<q>")
-         (backslash-marker "<b>"))
+         (backslash-marker "<b>")
+         (post-comment-keyword ":<a>"))
 
     (with-temp-buffer
       (apply #'insert-buffer-substring-no-properties orig-buffer defun-region)
@@ -490,7 +491,7 @@ convention."
       ;; through pprinting. Otherwise they become indistinguishable
       ;; from "\n"s.
       (goto-char (point-min))
-      (while (search-forward "\"" (point-max) t)
+      (while (search-forward "\"" nil t)
         (when (paredit-in-string-p)
           (let ((end (cdr (paredit-string-start+end-points))))
             (while (search-forward "\n" end 1)
@@ -501,7 +502,7 @@ convention."
       ;; them through pprinting. Preserve quotes and backslashes with
       ;; markers.
       (goto-char (point-min))
-      (while (search-forward ";" (point-max) t)
+      (while (search-forward ";" nil t)
         (when (paredit-in-comment-p)
           (backward-char)
           (insert "\"")
@@ -512,7 +513,11 @@ convention."
             (goto-char start)
             (while (search-forward "\\" (line-end-position) 1)
               (replace-match backslash-marker)))
-          (insert "\"")))
+          (insert "\"")
+          ;; Add a marker (in this case a keyword) immediately after a
+          ;; stringified comment so that literal hash maps have an
+          ;; even number of elements.
+          (insert post-comment-keyword)))
 
       (let ((form (buffer-substring (point-min) (point-max))))
         (cider-eval (format "(clojure.pprint/with-pprint-dispatch clojure.pprint/code-dispatch (clojure.pprint/pprint '%s))" form)
@@ -529,13 +534,27 @@ convention."
 
       (lisp-mode)
 
+      ;; Strip out the post-comment keyword markers and any preceding whitespace.
+      (goto-char (point-min))
+      (while (re-search-forward (concat "[ \n]*" post-comment-keyword) nil t)
+        (replace-match ""))
+
+      ;; Strip out all commas not in strings because they'll get
+      ;; messed up by comment un-stringification and most people don't
+      ;; use them anyway.
+      (goto-char (point-min))
+      (while (search-forward "," nil t)
+        (when (not (paredit-in-string-p))
+          ;; Can't use replace-match because it's messed up by paredit-in-string-p.
+          (delete-backward-char 1)))
+
       ;; Replace newline markers in strings with newlines.
       ;; Un-stringify comments and un-preserve their quotes and
       ;; backslashes. Add newlines before or after comments as needed.
       ;; Assumes more than one semicolon means the comment should be
       ;; on its own line.
       (goto-char (point-min))
-      (while (search-forward "\"" (point-max) t)
+      (while (search-forward "\"" nil t)
         (when (paredit-in-string-p)
           (let* ((b (paredit-string-start+end-points))
                  (start (car b))
@@ -549,22 +568,19 @@ convention."
                        (when (/= (point) (line-end-position))
                          (open-line 1))
                        (goto-char start)
+                       (progn
+                         (skip-chars-backward " \n")
+                         (delete-region (point) start))
+                       (setq start (point))
                        (while (search-forward quote-marker (line-end-position) t)
                          (replace-match "\""))
                        (goto-char start)
                        (while (search-forward backslash-marker (line-end-position) t)
                          (replace-match "\\\\"))
-                       (goto-char (1- start))
-                       (if (= ?\; (char-after (+ 2 (point))))
-                           ;; multiple semicolons
-                           (when (and (/= (point) (line-beginning-position))
-                                      ;; assumes spaces are used for indentation
-                                      (/= ?\s (char-before)))
-                             (open-line 1))
-                         ;; single semicolon
-                         (progn
-                           (skip-chars-backward " \n")
-                           (delete-region (point) start))))
+                       (goto-char start)
+                       ;; multiple semicolons
+                       (when (= ?\; (char-after (1+ (point))))
+                         (open-line 1)))
 
               (while (search-forward newline-marker end t)
                 (replace-match "
