@@ -467,11 +467,10 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
 (global-set-key (kbd "M-s-≥") 'find-tag) ; OS X turns M-s-. into M-s-≥
 
 
-(defun cider-pprint-defun-at-point-in-place (&optional no-commas)
+(defun pprint-def-in-place (&optional ARG)
   "Pretty-print the current top-level form in place.
 Assumes comments follow the usual number-of-semicolons
-convention. With an optional numeric argument, strips all
-commas."
+convention. With a prefix ARG >1, strips all commas."
   (interactive "p")
   (let* ((defun-region (cider--region-for-defun-at-point))
          (orig-buffer (current-buffer))
@@ -541,7 +540,7 @@ commas."
         (replace-match ""))
 
       ;; Optionally strip out all commas not in strings.
-      (when no-commas
+      (when (> ARG 1)
         (goto-char (point-min))
         (while (search-forward "," nil t)
           (when (not (paredit-in-string-p))
@@ -616,7 +615,7 @@ commas."
   (define-key cider-mode-map      (kbd "<s-f9>")       'save-insert-last-sexp-in-repl)
   (define-key cider-mode-map      (kbd "C-c C-d")      'ac-nrepl-popup-doc)
   (define-key cider-mode-map      [f8]                 'create-clj-tags)
-  (define-key cider-mode-map      (kbd "C-M-q")        'cider-pprint-defun-at-point-in-place)
+  (define-key cider-mode-map      (kbd "C-M-q")        'pprint-def-in-place)
 
   (define-key cider-repl-mode-map (kbd "<s-up>")       'cider-repl-backward-input)
   (define-key cider-repl-mode-map (kbd "<s-down>")     'cider-repl-forward-input)
