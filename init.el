@@ -470,18 +470,24 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
 (defun pprint-def-in-place (&optional ARG)
   "Pretty-print the current top-level form in place.
 Assumes comments follow the usual number-of-semicolons
-convention. With a prefix ARG >1, strips all commas."
+convention. With a prefix ARG >1, ignores existing commas and
+inserts new commas in map literals."
   (interactive "p")
   (let* ((defun-region (cider--region-for-defun-at-point))
          (orig-buffer (current-buffer))
          (eval-out-buffer (generate-new-buffer "temp"))
-         (comment-marker "<;>")
+         (comment-marker ";¬")
          (comment-marker-len (length comment-marker))
-         (newline-marker "<n>")
+         (newline-marker "n¬")
          (newline-marker-len (length newline-marker))
-         (quote-marker "<q>")
-         (backslash-marker "<b>")
-         (post-comment-keyword ":<a>"))
+         (quote-marker "q¬")
+         (backslash-marker "b¬")
+         (comma-keyword ":c¬")
+
+         ;; Keyword marker to insert after stringified comments or
+         ;; comma-marking keywords to ensure literal hash maps have an
+         ;; even number of forms.
+         (balancing-keyword ":a¬"))
 
     (with-temp-buffer
       (apply #'insert-buffer-substring-no-properties orig-buffer defun-region)
@@ -514,10 +520,24 @@ convention. With a prefix ARG >1, strips all commas."
             (while (search-forward "\\" (line-end-position) 1)
               (replace-match backslash-marker)))
           (insert "\"")
-          ;; Add a marker (in this case a keyword) immediately after a
-          ;; stringified comment so that literal hash maps have an
-          ;; even number of elements.
-          (insert post-comment-keyword)))
+          ;; Add a keyword immediately after a stringified comment so
+          ;; that literal hash maps are balanced.
+          (insert balancing-keyword)))
+
+      ;; Unless there's a prefix ARG >1, preserve commas by replacing
+      ;; with comma-marking keywords.  Then insert another keyword so
+      ;; that literal hash maps are balanced.
+      (when (= ARG 1)
+        (goto-char (point-min))
+        (while (search-forward "," nil t)
+          (when (not (paredit-in-string-p))
+            ;; Can't use replace-match because it's messed up by paredit-in-string-p.
+            (delete-backward-char 1)
+            (insert ?\s)
+            (insert comma-keyword)
+            (insert ?\s)
+            (insert balancing-keyword)
+            (insert ?\s))))
 
       (let ((form (buffer-substring (point-min) (point-max))))
         (cider-eval (format "(clojure.pprint/with-pprint-dispatch clojure.pprint/code-dispatch (clojure.pprint/pprint '%s))" form)
@@ -534,18 +554,24 @@ convention. With a prefix ARG >1, strips all commas."
 
       (lisp-mode)
 
-      ;; Strip out the post-comment keyword markers and any preceding whitespace.
+      ;; Strip out the balancing keywords and any preceding whitespace.
       (goto-char (point-min))
-      (while (re-search-forward (concat "[ \n]*" post-comment-keyword) nil t)
+      (while (re-search-forward (concat "[ \n]*" balancing-keyword) nil t)
         (replace-match ""))
 
-      ;; Optionally strip out all commas not in strings.
-      (when (> ARG 1)
+      ;; Unless there's a prefix ARG >1, strip out all commas not in
+      ;; strings (that were inserted by pprinting), then change all
+      ;; comma-marking keywords (with preceding whitespace) into commas.
+      (when (= ARG 1)
         (goto-char (point-min))
         (while (search-forward "," nil t)
           (when (not (paredit-in-string-p))
             ;; Can't use replace-match because it's messed up by paredit-in-string-p.
-            (delete-backward-char 1))))
+            (delete-backward-char 1)))
+
+        (goto-char (point-min))
+        (while (re-search-forward (concat "[ \n]*" comma-keyword) nil t)
+          (replace-match ",")))
 
       ;; Replace newline markers in strings with newlines.
       ;; Un-stringify comments and un-preserve their quotes and
@@ -564,17 +590,21 @@ convention. With a prefix ARG >1, strips all commas."
                        (delete-backward-char 1)
                        (goto-char (- end comment-marker-len 1))
                        (delete-forward-char 1)
-                       (setq has-comma-after (= ?\, (char-after (point))))
-                       (when has-comma-after (delete-forward-char 1))
+                       ;; fix pprinted commas after comments only when there's an ARG >1
+                       (when (> ARG 1)
+                         (setq has-comma-after (= ?\, (char-after (point))))
+                         (when has-comma-after (delete-forward-char 1)))
                        (when (/= (point) (line-end-position))
                          (open-line 1))
                        (goto-char start)
                        (progn
                          (skip-chars-backward " \n")
                          (delete-region (point) start))
-                       (if (and (= ?\, (char-before (point)))
-                                (not has-comma-after))
-                           (delete-backward-char 1))
+                       ;; fix pprinted commas before comments only when there's an ARG >1
+                       (when (> ARG 1)
+                         (if (and (= ?\, (char-before (point)))
+                                  (not has-comma-after))
+                             (delete-backward-char 1)))
                        (setq start (point))
                        (while (search-forward quote-marker (line-end-position) t)
                          (replace-match "\""))
