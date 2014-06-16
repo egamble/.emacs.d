@@ -483,6 +483,7 @@ inserts new commas in map literals."
          (quote-marker "q¬")
          (backslash-marker "b¬")
          (comma-keyword ":c¬")
+         (meta-keyword ":m¬")
 
          ;; Keyword marker to insert after stringified comments or
          ;; comma-marking keywords to ensure literal hash maps have an
@@ -493,7 +494,7 @@ inserts new commas in map literals."
       (apply #'insert-buffer-substring-no-properties orig-buffer defun-region)
       (lisp-mode)
 
-      ;; Replace newlines with markers to allow their preservation
+      ;; Replace newlines in strings with markers to allow their preservation
       ;; through pprinting. Otherwise they become indistinguishable
       ;; from "\n"s.
       (goto-char (point-min))
@@ -539,6 +540,19 @@ inserts new commas in map literals."
             (insert balancing-keyword)
             (insert ?\s))))
 
+      ;; Preserve metadata by replacing the leading ^s with
+      ;; metadata-marking keywords. No need for another keyword to
+      ;; keep hash maps balanced because the metadata itself provides the
+      ;; balancing s-exp.
+      (goto-char (point-min))
+      (while (search-forward "^" nil t)
+        (when (not (paredit-in-string-p))
+          ;; Can't use replace-match because it's messed up by paredit-in-string-p.
+          (delete-backward-char 1)
+          (insert ?\s)
+          (insert meta-keyword)
+          (insert ?\s)))
+
       (let ((form (buffer-substring (point-min) (point-max))))
         (cider-eval (format "(clojure.pprint/with-pprint-dispatch clojure.pprint/code-dispatch (clojure.pprint/pprint '%s))" form)
                     (cider-popup-eval-out-handler eval-out-buffer)
@@ -572,6 +586,11 @@ inserts new commas in map literals."
         (goto-char (point-min))
         (while (re-search-forward (concat "[ \n]*" comma-keyword) nil t)
           (replace-match ",")))
+
+      ;; Change all metadata-marking keywords (with following whitespace) into ^s.
+      (goto-char (point-min))
+      (while (re-search-forward (concat meta-keyword "[ \n]*") nil t)
+        (replace-match "^"))
 
       ;; Replace newline markers in strings with newlines.
       ;; Un-stringify comments and un-preserve their quotes and
