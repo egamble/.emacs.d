@@ -409,27 +409,27 @@ it to the beginning of the line."
     (select-window start-clojure-window)
 
     ;; Switch the REPL window to some other buffer, in case there are more than three windows and the REPL is in the wrong one.
-   (set-window-buffer repl-win "*Messages*")
+    (set-window-buffer repl-win "*Messages*")
 
     ;; Put the REPL in the window before the Clojure buffer, i.e. the bottom right window (usually).
-   (other-window -1)
-   (switch-to-buffer repl-buf)
+    (other-window -1)
+    (switch-to-buffer repl-buf)
 
     ;; Lock the REPL window to the REPL buffer.
-   (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
+    (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
 
     ;; Put the server buffer in the window before the REPL, generally just above it.
-   (other-window -1)
-   (switch-to-buffer server-buf)
+    (other-window -1)
+    (switch-to-buffer server-buf)
 
     ;; Lock the server window to the server buffer.
-   (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
+    (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
 
     ;; Shrink the server window to window-min-height.
-   (shrink-window 100)
+    (shrink-window 100)
 
     ;; Select the REPL window again.
-   (other-window 1))
+    (other-window 1))
 
   ;; Go to the Clojure window and load the Clojure code (which goes back to the REPL window and sets the NS) then go back to the Clojure window.
   (select-window start-clojure-window)
@@ -439,11 +439,11 @@ it to the beginning of the line."
 
 
 (defun start-cider-or-after-start ()
-  "If the current buffer is not a Cider buffer (such as the REPL), run start-cider.
+  "If the current buffer is not a cider REPL, run start-cider.
 Otherwise run after-start-cider, which organizes the windows, loads the code from the
 starting buffer, sets the namespace in the REPL, and returns to the starting buffer."
   (interactive)
-  (if (string-match "cider" (buffer-name (current-buffer)))
+  (if (string-match "cider-repl" (buffer-name (current-buffer)))
     (after-start-cider)
     (start-cider)))
 
