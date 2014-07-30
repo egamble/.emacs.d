@@ -120,7 +120,7 @@
 (let (refreshed)
   (dolist (package '(auto-complete
                      paredit
-                     clojure-mode clojure-test-mode
+                     clojure-mode
                      cider ac-nrepl
                      highlight-parentheses
                      fold-dwim fold-dwim-org
@@ -353,6 +353,8 @@ it to the beginning of the line."
                            (other-window -2))))))
 
 
+(defvar start-clojure-window nil)
+
 (defun start-cider ()
   (interactive)
 
@@ -360,6 +362,8 @@ it to the beginning of the line."
         (and (string-match ".clj" bn)
              (not (string-match "project.clj" bn))))
       (progn
+        (setq start-clojure-window (car (window-list)))
+
         ;; Undedicate all windows.
         (dolist (w (window-list))
           (set-window-dedicated-p w nil))
@@ -377,13 +381,11 @@ it to the beginning of the line."
             (nrepl-close connection)))
         (cider-close-ancilliary-buffers)
         (setq repl-ns nil)
-        (add-hook 'nrepl-connected-hook 'after-start-cider)
         (cider-jack-in))
 
     (message "Buffer %s is not a Clojure source file" (current-buffer))))
 
 
-;; Run as an nrepl-connected-hook after start-cider.
 ;; 1. Tries to move the REPL to the lower right window.
 ;; 2. Puts the nrepl-server buffer in the window above the REPL window and shrinks the server window.
 ;; 3. Loads the Clojure buffer and sets the namespace in the REPL.
@@ -391,55 +393,61 @@ it to the beginning of the line."
 (defun after-start-cider ()
   (interactive)
 
-  (remove-hook 'nrepl-connected-hook 'after-start-cider)
-
   ;; Select the REPL window if it's not already selected.
-  (let ((ws (window-list)))
-    (when (not (string-match "cider" (buffer-name (current-buffer))))
-      (dolist (w (window-list))
-        (when (string-match "cider" (buffer-name (window-buffer w)))
-          (select-window w)))))
+  (when (not (string-match "cider-repl" (buffer-name (current-buffer))))
+    (dolist (w (window-list))
+      (when (string-match "cider-repl" (buffer-name (window-buffer w)))
+        (select-window w))))
 
   (let* ((repl-win (car (window-list)))
          (repl-buf (current-buffer))
          (server-buf (replace-regexp-in-string
-                      "cider" "nrepl-server"
+                      "cider-repl" "nrepl-server"
                       (buffer-name repl-buf))))
 
     ;; From the REPL window, switch to the Clojure window.
-    (cider-switch-to-last-clojure-buffer)
+    (select-window start-clojure-window)
 
     ;; Switch the REPL window to some other buffer, in case there are more than three windows and the REPL is in the wrong one.
-    (set-window-buffer repl-win "*Messages*")
+   (set-window-buffer repl-win "*Messages*")
 
     ;; Put the REPL in the window before the Clojure buffer, i.e. the bottom right window (usually).
-    (other-window -1)
-    (switch-to-buffer repl-buf)
+   (other-window -1)
+   (switch-to-buffer repl-buf)
 
     ;; Lock the REPL window to the REPL buffer.
-    (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
+   (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
 
     ;; Put the server buffer in the window before the REPL, generally just above it.
-    (other-window -1)
-    (switch-to-buffer server-buf)
+   (other-window -1)
+   (switch-to-buffer server-buf)
 
     ;; Lock the server window to the server buffer.
-    (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
+   (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
 
     ;; Shrink the server window to window-min-height.
-    (shrink-window 100)
+   (shrink-window 100)
 
     ;; Select the REPL window again.
-    (other-window 1))
+   (other-window 1))
 
   ;; Go to the Clojure window and load the Clojure code (which goes back to the REPL window and sets the NS) then go back to the Clojure window.
-  (cider-switch-to-last-clojure-buffer)
+  (select-window start-clojure-window)
   (cider-save-load-switch-to-repl-set-ns)
   (cider-eval-and-get-value "(clojure.core/use 'clojure.repl)") ; so we can use e.g. the source and doc functions
-  (cider-switch-to-last-clojure-buffer))
+  (select-window start-clojure-window))
 
 
-(global-set-key (kbd "s-=") 'start-cider)
+(defun start-cider-or-after-start ()
+  "If the current buffer is not a Cider buffer (such as the REPL), run start-cider.
+Otherwise run after-start-cider, which organizes the windows, loads the code from the
+starting buffer, sets the namespace in the REPL, and returns to the starting buffer."
+  (interactive)
+  (if (string-match "cider" (buffer-name (current-buffer)))
+    (after-start-cider)
+    (start-cider)))
+
+(global-set-key (kbd "s-=") 'start-cider-or-after-start)
 
 
 (defun create-clj-tags (&optional arg)
@@ -655,6 +663,10 @@ inserts new commas in map literals."
 ;; C-c C-r evaluates region
 ;; C-C C-c evaluates def at point
 ;; C-up, C-down and s-up, s-down go backward and forward in REPL history
+;; C-c , run all tests
+;; C-c C-, rerun all tests
+;; C-c M-, run one test
+
 (defun cider-custom-keys ()
   (define-key cider-mode-map      (kbd "C-c C-k")      'cider-save-load-switch-to-repl-set-ns)
   (define-key cider-mode-map      [f10]                'cider-save-load-switch-to-repl-set-ns)
@@ -672,13 +684,6 @@ inserts new commas in map literals."
   (define-key cider-repl-mode-map [f10]                'cider-switch-to-last-clojure-buffer))
 
 (add-hook 'cider-mode-hook 'cider-custom-keys)
-
-
-;; Remember:
-;; C-c C-t switches between a Clojure buffer and its corresponding test buffer
-;; C-c C-, and C-c , run all tests from either the Clojure buffer or its test buffer
-;; C-c k clears highlighted failures
-(add-hook 'cider-mode-hook 'clojure-test-mode)
 
 
 (defun clojure-enable-cider ()
@@ -725,6 +730,20 @@ Leave one space or none, according to the context."
 (autoload 'json-mode "json-mode"
   "Major mode for editing JSON files" t)
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
+
+
+(defun set-exec-path-from-shell-PATH ()
+  "Set up Emacs' 'exec-path' and PATH environment variable to match that used by the user's shell.
+This is particularly useful under Mac OS X, where GUI apps are not started from a shell.
+Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/path-and-exec-path-set-but-emacs-does-not-find-executable."
+  (interactive)
+  (let ((path-from-shell (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'")))
+    (setenv "PATH" path-from-shell)
+    (mapc (lambda (p) (add-to-list 'exec-path
+                              (replace-regexp-in-string "[ \t\n]*$" "" p)))
+          (split-string path-from-shell path-separator))))
+
+(set-exec-path-from-shell-PATH)
 
 
 (custom-set-faces

@@ -8,5 +8,6 @@ NB: The very latest builds in "Nightlies" seem to throw an error while reading i
 3. Either `cp ~/.emacs.d/.emacs ~` or merge ~/.emacs.d/.emacs with your existing ~/.emacs.
 4. To open a file in the currently running Emacs.app from a terminal shell, put a link to /Applications/Emacs.app/Contents/MacOS/bin/emacsclient somewhere on your PATH. E.g. `ln -s /Applications/Emacs.app/Contents/MacOS/bin/emacsclient /usr/local/bin/emacsclient`. You may need to update your PATH in ~/.bashrc or ~/.bash_profile with e.g. `PATH=/usr/local/bin:$PATH`.
 5. Verify with `which emacsclient` that emacsclient comes from /usr/local/bin rather than /usr/bin.
-5. A nice shortcut for invoking emacsclient is `alias e='emacsclient -n'`, which you could put in your ~/.bashrc or ~/.bash_profile.
-6. Whenever you update your ~/.emacs.d from this repo with `git pull`, remove `~/.emacs.d/elpa` prior to restarting emacs. This ensures that the latest versions of the emacs packages are installed.
+6. A nice shortcut for invoking emacsclient is `alias e='emacsclient -n'`, which you could put in your ~/.bashrc or ~/.bash_profile.
+7. To use cider, first install leiningen as in `https://github.com/technomancy/leiningen`. Then add `:plugins [[cider/cider-nrepl "0.7.0-SNAPSHOT"]]` to the `:user` profile in `~/.lein/profiles.clj`.
+9. Whenever you update your ~/.emacs.d from this repo with `git pull`, remove `~/.emacs.d/elpa` prior to restarting emacs. This ensures that the latest versions of the emacs packages are installed.
