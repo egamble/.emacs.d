@@ -118,10 +118,10 @@
 
 
 (let (refreshed)
-  (dolist (package '(auto-complete
-                     paredit
+  (dolist (package '(paredit
                      clojure-mode
-                     cider ac-nrepl
+                     cider
+                     company
                      highlight-parentheses
                      fold-dwim fold-dwim-org
                      smex
@@ -139,15 +139,11 @@
 (require 'cider)
 (require 'clojure-mode)
 
-(require 'auto-complete-config)
-(ac-config-default)
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
-(require 'ac-nrepl)
-(add-hook 'cider-mode-hook      'ac-nrepl-setup)
-(add-hook 'cider-mode-hook      'cider-turn-on-eldoc-mode)
-(add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
-(eval-after-load "auto-complete"
-  '(add-to-list 'ac-modes 'cider-repl-mode))
+(require 'company)
+(global-company-mode)
+
 
 ;; indent let? the same as let
 (define-clojure-indent
@@ -302,14 +298,6 @@ it to the beginning of the line."
 (add-hook 'cider-repl-mode-hook 'clj-pretty-fn)
 
 
-;; Temporary until the real function is fixed so it doesn't throw an error.
-(defun nrepl-current-connection-buffer ()
-  "The connection to use for nREPL interaction."
-  (or nrepl-connection-dispatch
-      nrepl-connection-buffer
-      (car (nrepl-connection-buffers))))
-
-
 (defvar repl-ns nil)
 
 (defun cider-save-load-switch-to-repl-set-ns ()
@@ -434,7 +422,6 @@ it to the beginning of the line."
   ;; Go to the Clojure window and load the Clojure code (which goes back to the REPL window and sets the NS) then go back to the Clojure window.
   (select-window start-clojure-window)
   (cider-save-load-switch-to-repl-set-ns)
-  (cider-eval-and-get-value "(clojure.core/use 'clojure.repl)") ; so we can use e.g. the source and doc functions
   (select-window start-clojure-window))
 
 
@@ -674,7 +661,6 @@ inserts new commas in map literals."
   (define-key cider-mode-map      (kbd "<C-M-s-down>") 'cider-save-eval-last-sexp)
   (define-key cider-mode-map      [f9]                 'cider-save-eval-last-sexp)
   (define-key cider-mode-map      (kbd "<s-f9>")       'save-insert-last-sexp-in-repl)
-  (define-key cider-mode-map      (kbd "C-c C-d")      'ac-nrepl-popup-doc)
   (define-key cider-mode-map      [f8]                 'create-clj-tags)
   (define-key cider-mode-map      (kbd "C-M-q")        'pprint-def-in-place)
 
