@@ -644,7 +644,9 @@ inserts new commas in map literals."
 
 
 ;; Also remember:
+;; C-c C-d ? shows all doc key bindings
 ;; C-c C-z switches back and forth between the REPL and the last Clojure buffer
+;; [f10] and C-c C-k are like C-c C-z, but also save, compile and set ns
 ;; [f9], M-s-down and C-c C-e evaluate expression preceding point
 ;; C-c C-p cider-pprint-eval-last-sexp
 ;; C-c C-r evaluates region
