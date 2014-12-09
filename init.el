@@ -304,7 +304,7 @@ it to the beginning of the line."
   "Save the buffer, load the Clojure code, switch to the REPL, set the namespace."
   (interactive)
   (save-buffer)
-  (cider-load-current-buffer)
+  (cider-load-buffer)
   (let* ((ns (cider-current-ns))
          (arg (when (not (equal repl-ns ns))
                 (setq repl-ns ns)
@@ -370,7 +370,7 @@ it to the beginning of the line."
         (dolist (connection nrepl-connection-list)
           (when connection
             (nrepl-close connection)))
-        (cider-close-ancilliary-buffers)
+        (cider-close-ancillary-buffers)
         (setq repl-ns nil)
         (cider-jack-in))
 
