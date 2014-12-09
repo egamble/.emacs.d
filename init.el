@@ -331,7 +331,7 @@ it to the beginning of the line."
 (defvar main-clj-window nil
   "Main editing window for Clojure source.")
 
-;; The main Clojure window is on right and the REPL on the left if true."
+;; main Clojure window is on right and the REPL on the left if true
 (setq main-clj-window-on-right t)
 
 (defun start-cider ()
