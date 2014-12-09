@@ -328,20 +328,11 @@ it to the beginning of the line."
     (insert s)))
 
 
-(defun ensure-four-windows ()
-  (let ((c (length (window-list))))
-    (cond ((eq c 1) (progn (split-window-horizontally)
-                           (ensure-four-windows)))
-          ((eq c 2) (progn (other-window 1)
-                           (split-window-vertically)
-                           (other-window -1)
-                           (ensure-four-windows)))
-          ((eq c 3) (progn (other-window 2)
-                           (split-window-vertically)
-                           (other-window -2))))))
+(defvar main-clj-window nil
+  "Main editing window for Clojure source.")
 
-
-(defvar start-clojure-window nil)
+;; The main Clojure window is on right and the REPL on the left if true."
+(setq main-clj-window-on-right t)
 
 (defun start-cider ()
   (interactive)
@@ -350,14 +341,26 @@ it to the beginning of the line."
         (and (string-match ".clj" bn)
              (not (string-match "project.clj" bn))))
       (progn
-        (setq start-clojure-window (car (window-list)))
-
         ;; Undedicate all windows.
         (dolist (w (window-list))
           (set-window-dedicated-p w nil))
 
         (delete-other-windows)
-        (ensure-four-windows)
+
+        (split-window-horizontally)
+        (if main-clj-window-on-right
+            (other-window 1))
+        (setq main-clj-window (car (window-list)))
+
+        (other-window 1)
+        (split-window-vertically)
+        (other-window 1)
+        (split-window-vertically)
+
+        ;; Shrink the server window to window-min-height.
+        (shrink-window 100)
+
+        (select-window main-clj-window)
 
         ;; Any other window with the current buffer is switched to something else, so after-start-cider won't get confused.
         (let ((ws (get-buffer-window-list (current-buffer))))
@@ -374,60 +377,38 @@ it to the beginning of the line."
     (message "Buffer %s is not a Clojure source file" (current-buffer))))
 
 
-;; 1. Tries to move the REPL to the lower right window.
-;; 2. Puts the nrepl-server buffer in the window above the REPL window and shrinks the server window.
+;; 1. Dedicate the REPL window.
+;; 2. Puts the nrepl-server buffer in the window above the REPL window and dedicates it.
 ;; 3. Loads the Clojure buffer and sets the namespace in the REPL.
 ;; 4. Goes back to the Clojure window.
 (defun after-start-cider ()
   (interactive)
 
-  ;; Select the REPL window if it's not already selected.
-  (when (not (string-match "cider-repl" (buffer-name (current-buffer))))
-    (dolist (w (window-list))
-      (when (string-match "cider-repl" (buffer-name (window-buffer w)))
-        (select-window w))))
+  ;; Lock the REPL window to the REPL buffer.
+  (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
 
-  (let* ((repl-win (car (window-list)))
-         (repl-buf (current-buffer))
+  ;; Put the server buffer in the window before the REPL, generally just above it.
+  (let* ((repl-buf (current-buffer))
          (server-buf (replace-regexp-in-string
                       "cider-repl" "nrepl-server"
                       (buffer-name repl-buf))))
-
-    ;; From the REPL window, switch to the Clojure window.
-    (select-window start-clojure-window)
-
-    ;; Switch the REPL window to some other buffer, in case there are more than three windows and the REPL is in the wrong one.
-    (set-window-buffer repl-win "*Messages*")
-
-    ;; Put the REPL in the window before the Clojure buffer, i.e. the bottom right window (usually).
     (other-window -1)
-    (switch-to-buffer repl-buf)
+    (switch-to-buffer server-buf))
 
-    ;; Lock the REPL window to the REPL buffer.
-    (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
+  ;; Lock the server window to the server buffer.
+  (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
 
-    ;; Put the server buffer in the window before the REPL, generally just above it.
-    (other-window -1)
-    (switch-to-buffer server-buf)
-
-    ;; Lock the server window to the server buffer.
-    (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
-
-    ;; Shrink the server window to window-min-height.
-    (shrink-window 100)
-
-    ;; Select the REPL window again.
-    (other-window 1))
-
-  ;; Go to the Clojure window and load the Clojure code (which goes back to the REPL window and sets the NS) then go back to the Clojure window.
-  (select-window start-clojure-window)
+  ;; Go to the Clojure window and load the Clojure code (which goes back to the REPL window and sets the NS).
+  (select-window main-clj-window)
   (cider-save-load-switch-to-repl-set-ns)
-  (select-window start-clojure-window))
+
+  ;; Go back to the Clojure window.
+  (select-window main-clj-window))
 
 
 (defun start-cider-or-after-start ()
   "If the current buffer is not a cider REPL, run start-cider.
-Otherwise run after-start-cider, which organizes the windows, loads the code from the
+Otherwise run after-start-cider, which sets up the server window, loads the code from the
 starting buffer, sets the namespace in the REPL, and returns to the starting buffer."
   (interactive)
   (if (string-match "cider-repl" (buffer-name (current-buffer)))
