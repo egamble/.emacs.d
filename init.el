@@ -402,6 +402,9 @@ it to the beginning of the line."
   (select-window main-clj-window)
   (cider-save-load-switch-to-repl-set-ns)
 
+  ;; (use 'clojure.repl) to enable doc, source, apropos, etc.
+  (cider-eval "(use 'clojure.repl)" (cider-interrupt-handler (current-buffer)))
+
   ;; Go back to the Clojure window.
   (select-window main-clj-window))
 
