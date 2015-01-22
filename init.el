@@ -182,15 +182,6 @@
   (set-mark (point))
   (paredit-backward))
 
-
-;; rainbow parentheses
-(require 'highlight-parentheses)
-(add-hook 'clojure-mode-hook '(lambda () (highlight-parentheses-mode 1)))
-(setq hl-paren-colors
-      '("orange1" "yellow1" "greenyellow" "green1"
-        "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
-
-
 ;; In addition to the following commands, remember these useful paredit commands:
 ;; paredit-forward-slurp-sexp <C-right>, C-)
 ;; paredit-forward-barf-sexp  <C-left>, C-}
@@ -198,20 +189,30 @@
 ;; paredit-wrap-round         M-(
 ;; paredit-join-sexps         M-J
 
+;; ...and this:
+;; transpose-sexps            C-M-t
+
 ;; ...and this useful clojure-mode command:
 ;; clojure-toggle-keyword-string C-:
 
 (dolist (mode '(clojure cider cider-repl emacs-lisp lisp scheme lisp-interaction))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
-            (highlight-parentheses-mode 1)
-            (paredit-mode 1)
-            (local-set-key (kbd "<M-left>")      'paredit-convolute-sexp)
-            (local-set-key (kbd "<M-s-right>")   'forward-select-sexp)
-            (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
-            (local-set-key (kbd "<M-s-left>")    'backward-select-sexp)
-            (local-set-key (kbd "<C-M-s-left>")  'backward-select-sexp)
-            )))
+              (highlight-parentheses-mode 1)
+              (paredit-mode 1)
+              (local-set-key (kbd "<M-left>")      'paredit-convolute-sexp)
+              (local-set-key (kbd "<M-s-right>")   'forward-select-sexp)
+              (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
+              (local-set-key (kbd "<M-s-left>")    'backward-select-sexp)
+              (local-set-key (kbd "<C-M-s-left>")  'backward-select-sexp))))
+
+
+;; rainbow parentheses
+(require 'highlight-parentheses)
+(add-hook 'clojure-mode-hook '(lambda () (highlight-parentheses-mode 1)))
+(setq hl-paren-colors
+      '("orange1" "yellow1" "greenyellow" "green1"
+        "springgreen1" "cyan1" "slateblue1" "magenta1" "purple"))
 
 
 (defmacro defclojureface (name color desc &optional others)
