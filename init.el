@@ -310,7 +310,7 @@ it to the beginning of the line."
          (arg (when (not (equal repl-ns ns))
                 (setq repl-ns ns)
                 4)))
-    (cider-switch-to-current-repl-buffer arg)))
+    (cider-switch-to-repl-buffer arg)))
 
 
 (defun cider-save-eval-last-sexp ()
@@ -404,7 +404,7 @@ it to the beginning of the line."
   (cider-save-load-switch-to-repl-set-ns)
 
   ;; (use 'clojure.repl) to enable doc, source, apropos, etc.
-  (cider-eval "(use 'clojure.repl)" (cider-interrupt-handler (current-buffer)))
+  (nrepl-sync-request:eval "(use 'clojure.repl)")
 
   ;; Go back to the Clojure window.
   (select-window main-clj-window))
