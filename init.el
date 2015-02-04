@@ -128,7 +128,7 @@
                      markdown-mode
                      ace-jump-mode
                      json-mode
-                     f
+                     f ; projectile requires this, but doesn't always successfully load it
                      projectile))
     (unless (package-installed-p package)
       (when (not refreshed)
@@ -201,7 +201,6 @@
             (lambda ()
               (highlight-parentheses-mode 1)
               (paredit-mode 1)
-              (local-set-key (kbd "<M-left>")      'paredit-convolute-sexp)
               (local-set-key (kbd "<M-s-right>")   'forward-select-sexp)
               (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
               (local-set-key (kbd "<M-s-left>")    'backward-select-sexp)
