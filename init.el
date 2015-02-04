@@ -128,6 +128,7 @@
                      markdown-mode
                      ace-jump-mode
                      json-mode
+                     f
                      projectile))
     (unless (package-installed-p package)
       (when (not refreshed)
@@ -310,7 +311,7 @@ it to the beginning of the line."
          (arg (when (not (equal repl-ns ns))
                 (setq repl-ns ns)
                 4)))
-    (cider-switch-to-repl-buffer arg)))
+    (cider-switch-to-current-repl-buffer arg)))
 
 
 (defun cider-save-eval-last-sexp ()
