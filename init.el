@@ -312,13 +312,11 @@ it to the beginning of the line."
       (setq repl-ns ns)
       (cider-repl-set-ns ns))))
 
-
 (defun cider-save-eval-last-sexp ()
   "Save the buffer, eval the sexp before point."
   (interactive)
   (save-buffer)
   (cider-eval-last-sexp))
-
 
 (defun save-insert-last-sexp-in-repl ()
   "Save the buffer, insert the sexp before point into the REPL buffer and switch to it."
@@ -327,6 +325,28 @@ it to the beginning of the line."
   (let ((s (cider-last-sexp)))
     (cider-switch-to-repl-buffer)
     (insert s)))
+
+
+(defun cider-test-save-load-run-tests ()
+  "Save the buffer, load the code, run all tests."
+  (interactive)
+  (save-buffer)
+  (cider-load-buffer)
+  (cider-test-run-tests nil))
+
+(defun cider-test-save-load-rerun-tests ()
+  "Save the buffer, load the code, rerun failed tests."
+  (interactive)
+  (save-buffer)
+  (cider-load-buffer)
+  (cider-test-rerun-tests))
+
+(defun cider-test-save-load-run-test ()
+  "Save the buffer, load the code, run the test at point."
+  (interactive)
+  (save-buffer)
+  (cider-load-buffer)
+  (cider-test-run-test))
 
 
 (defvar main-clj-window nil
@@ -461,9 +481,9 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
 ;; C-c C-r evaluates region
 ;; C-C C-c evaluates def at point
 ;; C-up, C-down and s-up, s-down go backward and forward in REPL history
-;; C-c , run all tests
-;; C-c C-, rerun all tests
-;; C-c M-, run one test
+;; C-c , save, compile, run all tests
+;; C-c C-, save, compile, rerun failed tests
+;; C-c M-, save, compile, run one test
 
 (defun cider-custom-keys ()
   (define-key cider-mode-map      (kbd "C-c C-k")      'cider-save-load-switch-to-repl-set-ns)
@@ -474,6 +494,9 @@ If the argument is 1 (the default), appends to the TAGS file, otherwise overwrit
   (define-key cider-mode-map      (kbd "<s-f9>")       'save-insert-last-sexp-in-repl)
   (define-key cider-mode-map      [f8]                 'create-clj-tags)
   (define-key cider-mode-map      (kbd "C-M-q")        'pprint-def-in-place)
+  (define-key cider-mode-map      (kbd "C-c ,")        'cider-test-save-load-run-tests)
+  (define-key cider-mode-map      (kbd "C-c C-,")      'cider-test-save-load-rerun-tests)
+  (define-key cider-mode-map      (kbd "C-c M-,")      'cider-test-save-load-run-test)
 
   (define-key cider-repl-mode-map (kbd "<s-up>")       'cider-repl-backward-input)
   (define-key cider-repl-mode-map (kbd "<s-down>")     'cider-repl-forward-input)
