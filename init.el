@@ -142,6 +142,8 @@
 
 (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
+(setq cider-prompt-for-symbol nil)
+
 (require 'company)
 (global-company-mode)
 
