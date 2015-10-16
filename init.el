@@ -551,7 +551,11 @@ Leave one space or none, according to the context."
 ;; C-c C-f pretty prints a JSON buffer
 (autoload 'json-mode "json-mode"
   "Major mode for editing JSON files" t)
-(add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
+
+
+;; Timeless S-expression files
+(add-to-list 'auto-mode-alist '("\\.tls\\'" . lisp-mode))
 
 
 (defun set-exec-path-from-shell-PATH ()
