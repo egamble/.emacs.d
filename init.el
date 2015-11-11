@@ -147,13 +147,15 @@
 
 (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
+;; Indent (if ...) with CL convention for Lisp mode. Doesn't affect Emacs-Lisp or Clojure modes.
+(add-hook 'lisp-mode-hook
+	   (lambda ()
+	     (set (make-local-variable 'lisp-indent-function)
+		  'common-lisp-indent-function)))
+
+
 (require 'company)
 (global-company-mode)
-
-
-;; indent let? the same as let
-(define-clojure-indent
-  (let? 1))
 
 
 ;; Toggle fold-dwim-org mode with C-tab.
@@ -166,6 +168,11 @@
 ;; supports fold-dwim-org
 ;; add separately from other lispish mode hooks because it messes up the nrepl buffer
 (add-hook 'clojure-mode-hook 'hs-minor-mode)
+
+
+;; indent let? the same as let
+(define-clojure-indent
+  (let? 1))
 
 
 (require 'paredit)
