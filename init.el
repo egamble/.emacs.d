@@ -129,7 +129,8 @@
                      ace-jump-mode
                      json-mode
                      f ; projectile requires this, but doesn't always successfully load it
-                     projectile))
+                     projectile
+                     haskell-mode))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
@@ -143,6 +144,8 @@
 (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
 (setq cider-prompt-for-symbol nil)
+
+(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
 (require 'company)
 (global-company-mode)
