@@ -149,9 +149,9 @@
 
 ;; Indent (if ...) with CL convention for Lisp mode. Doesn't affect Emacs-Lisp or Clojure modes.
 (add-hook 'lisp-mode-hook
-	   (lambda ()
-	     (set (make-local-variable 'lisp-indent-function)
-		  'common-lisp-indent-function)))
+          (lambda ()
+            (set (make-local-variable 'lisp-indent-function)
+                 'common-lisp-indent-function)))
 
 
 (require 'company)
