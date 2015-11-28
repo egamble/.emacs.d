@@ -170,9 +170,10 @@
 (add-hook 'clojure-mode-hook 'hs-minor-mode)
 
 
-;; indent let? the same as let
+;; better indent for let? and condf
 (define-clojure-indent
-  (let? 1))
+  (let? 1)
+  (condf 1))
 
 
 (require 'paredit)
