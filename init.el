@@ -401,7 +401,7 @@ it to the beginning of the line."
           (dolist (w (cdr ws))
             (set-window-buffer w "*Messages*")))
 
-        (dolist (connection nrepl-connection-list)
+        (dolist (connection cider-connections)
           (when connection
             (nrepl-close connection)))
         (cider-close-ancillary-buffers)
