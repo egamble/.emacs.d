@@ -437,7 +437,7 @@ it to the beginning of the line."
   (cider-save-load-switch-to-repl-set-ns)
 
   ;; (use 'clojure.repl) to enable doc, source, apropos, etc.
-  (nrepl-sync-request:eval "(clojure.core/use 'clojure.repl)")
+  (cider-nrepl-sync-request:eval "(clojure.core/use 'clojure.repl)")
 
   ;; Go back to the Clojure window.
   (select-window main-clj-window))
@@ -588,7 +588,7 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
-  '(default ((t (:height 140)))))
+  '(default ((t (:height 150)))))
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
