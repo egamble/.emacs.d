@@ -403,7 +403,7 @@ it to the beginning of the line."
 
         (dolist (connection cider-connections)
           (when connection
-            (nrepl-close connection)))
+            (cider--close-connection-buffer connection)))
         (cider-close-ancillary-buffers)
         (setq repl-ns nil)
         (cider-jack-in))
