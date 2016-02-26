@@ -130,12 +130,18 @@
                      json-mode
                      f ; projectile requires this, but doesn't always successfully load it
                      projectile
-                     haskell-mode))
+                     haskell-mode
+                     slime))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
         (setq refreshed t))
       (package-install package))))
+
+
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+(require 'slime)
+(slime-setup '(slime-fancy))
 
 
 (require 'cider)
