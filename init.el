@@ -42,6 +42,9 @@
 ;; just shut up and reload the tags file!
 (setq tags-revert-without-query 1)
 
+;; stop asking if I want to keep the current list of tags tables
+(setq tags-add-tables nil)
+
 ;; undo/redo pane configuration with C-c left/right arrow
 (winner-mode 1)
 
