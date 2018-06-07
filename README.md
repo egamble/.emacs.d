@@ -1,6 +1,4 @@
-Emacs 24.3 is required for this init.el. I'm using it on Mac OS X 10.11 with emacs 24.3.50 from [emacsformacosx.com](http://emacsformacosx.com/), available in the [Nightlies](http://emacsformacosx.com/builds#Nightlies) section of [Builds](http://emacsformacosx.com/builds), rather than the current release, which is still at 24.3.1.  Fullscreen on OS X looks better starting at version 24.3.50.
-
-NB: The very latest builds in "Nightlies" seem to throw an error while reading init.el. The build from [September 12, 2013](http://emacsformacosx.com/emacs-builds/Emacs-2013-09-12-114240-universal-10.6.8.dmg) works well for me.
+Emacs 24.4 is required for this init.el. I'm using it on Mac OS X 10.13 with emacs 24.3.50 from [emacsformacosx.com](http://emacsformacosx.com/).
 
 ## Installation
 1. Back up ~/.emacs.d if there is anything you wish to keep.

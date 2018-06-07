@@ -151,8 +151,6 @@
 (require 'cider)
 (require 'clojure-mode)
 
-(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-
 (setq cider-prompt-for-symbol nil)
 
 (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
