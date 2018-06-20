@@ -369,6 +369,7 @@ it to the beginning of the line."
   (cider-load-buffer)
   (cider-test-run-test))
 
+
 (defvar main-clj-buffer nil
   "Main buffer for Clojure source.")
 
@@ -394,6 +395,7 @@ it to the beginning of the line."
         (cider-jack-in))
 
     (message "Buffer %s is not a Clojure source file" (current-buffer))))
+
 
 ;; main Clojure window is on left and the REPL on the right if true
 (setq main-clj-window-on-left nil)
@@ -451,17 +453,17 @@ it to the beginning of the line."
     (cider-nrepl-sync-request:eval "(clojure.core/use 'clojure.repl)")
 
     ;; Go back to the Clojure window.
-    (other-window 1))
+    (other-window 1)))
 
 
-  (defun start-cider-or-after-start ()
-    "If the current buffer is not a cider REPL, run start-cider.
+(defun start-cider-or-after-start ()
+  "If the current buffer is not a cider REPL, run start-cider.
 Otherwise run after-start-cider, which sets up the server window, loads the code from the
 starting buffer, sets the namespace in the REPL, and returns to the starting buffer."
-    (interactive)
-    (if (string-match "cider-repl" (buffer-name (current-buffer)))
-        (after-start-cider)
-      (start-cider))))
+  (interactive)
+  (if (string-match "cider-repl" (buffer-name (current-buffer)))
+      (after-start-cider)
+    (start-cider)))
 
 (global-set-key (kbd "s-=") 'start-cider-or-after-start)
 
