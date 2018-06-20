@@ -409,9 +409,9 @@ it to the beginning of the line."
           (dolist (w (cdr ws))
             (set-window-buffer w "*Messages*")))
 
-        (dolist (connection cider-connections)
+        (dolist (connection (cider-connections))
           (when connection
-            (cider--close-connection-buffer connection)))
+            (cider--close-connection connection)))
         (cider-close-ancillary-buffers)
         (setq repl-ns nil)
         (cider-jack-in))
@@ -430,12 +430,11 @@ it to the beginning of the line."
   (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
 
   ;; Put the server buffer in the window before the REPL, generally just above it.
-  (let* ((repl-buf (current-buffer))
-         (server-buf (replace-regexp-in-string
-                      "cider-repl" "nrepl-server"
-                      (buffer-name repl-buf))))
-    (other-window -1)
-    (switch-to-buffer server-buf))
+  (other-window -1)
+  (switch-to-buffer
+   (car (remove-if-not (lambda (buffer)
+                         (string-match "nrepl-server" (buffer-name buffer)))
+                       (buffer-list))))
 
   ;; Lock the server window to the server buffer.
   (set-window-dedicated-p (get-buffer-window (current-buffer)) t)
