@@ -6,3 +6,5 @@ elpa
 tramp
 projectile-bookmarks.eld
 TAGS
+ido.list
+smex-items
