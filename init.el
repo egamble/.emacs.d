@@ -577,6 +577,8 @@ Leave one space or none, according to the context."
   "Major mode for editing JSON files" t)
 (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
 
+;; It's more likely that a .mm file is Objective-C than nroff.
+(add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
 
 ;; Timeless S-expression files
 (add-to-list 'auto-mode-alist '("\\.tls\\'" . lisp-mode))
