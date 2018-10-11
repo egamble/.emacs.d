@@ -135,7 +135,8 @@
                      f ; projectile requires this, but doesn't always successfully load it
                      projectile
                      haskell-mode
-                     slime))
+                     slime
+                     buffer-move))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
@@ -286,6 +287,13 @@ it to the beginning of the line."
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 ;; This is your old M-x.
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
+
+;; buffer-move
+(global-set-key (kbd "<C-s-up>")     'buf-move-up)
+(global-set-key (kbd "<C-s-down>")   'buf-move-down)
+(global-set-key (kbd "<C-s-left>")   'buf-move-left)
+(global-set-key (kbd "<C-s-right>")  'buf-move-right)
 
 
 (defun toggle-window-dedicated ()
