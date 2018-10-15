@@ -290,6 +290,7 @@ it to the beginning of the line."
 
 
 ;; buffer-move
+(setq buffer-move-stay-after-swap t)
 (global-set-key (kbd "<C-s-up>")     'buf-move-up)
 (global-set-key (kbd "<C-s-down>")   'buf-move-down)
 (global-set-key (kbd "<C-s-left>")   'buf-move-left)
