@@ -20,6 +20,7 @@
 (setq default-tab-width 2)
 (setq-default indent-tabs-mode nil)
 (setq sh-basic-offset 2)
+(setq python-indent 2)
 
 ;; show column numbers
 (setq column-number-mode t)
