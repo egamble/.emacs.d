@@ -20,6 +20,7 @@
 (setq default-tab-width 2)
 (setq-default indent-tabs-mode nil)
 (setq sh-basic-offset 2)
+(setq c-basic-offset 2)
 
 (add-hook 'python-mode-hook
           (lambda ()
