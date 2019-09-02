@@ -556,6 +556,8 @@ Modified from the definition in cider-interaction.el to not work for project.clj
 
 (setq cider-repl-history-file "~/.emacs.d/cider-hist.dat")
 
+(setq cider-repl-display-help-banner nil)
+
 
 (defun squeeze-whitespace ()
   "Squeeze white space (including new lines) between objects around point.
