@@ -141,7 +141,8 @@
                      projectile
                      haskell-mode
                      slime
-                     buffer-move))
+                     buffer-move
+                     go-mode))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
