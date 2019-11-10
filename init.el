@@ -142,7 +142,9 @@
                      haskell-mode
                      slime
                      buffer-move
-                     go-mode))
+                     go-mode
+                     company-go
+                     exec-path-from-shell))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
@@ -170,7 +172,7 @@
 
 
 (require 'company)
-(global-company-mode)
+(add-hook 'after-init-hook 'global-company-mode)
 
 
 ;; Toggle fold-dwim-org mode with C-tab.
@@ -613,6 +615,17 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
           (split-string path-from-shell path-separator))))
 
 (set-exec-path-from-shell-PATH)
+
+
+(setenv "GOPATH" (shell-command-to-string "$SHELL --login -i -c 'echo $GOPATH'"))
+
+
+(add-hook 'go-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-.") 'godef-jump)
+            (local-set-key (kbd "M-*") 'pop-tag-mark)
+            (add-hook 'before-save-hook 'gofmt-before-save)
+            (set (make-local-variable 'company-backends) '(company-go))))
 
 
 (custom-set-faces
