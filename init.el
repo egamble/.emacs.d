@@ -86,7 +86,7 @@
     (global-set-key (kbd "s-z")                'undo)
     (global-set-key (kbd "s-q")                'save-buffers-kill-terminal)))
 
-(global-set-key [f7]                       'revert-buffer)
+(global-set-key [f7]                       '(lambda () "revert-buffer noconfirm" (interactive) (revert-buffer nil t)))
 (global-set-key [f12]                      'other-window)
 
 (global-set-key (kbd "<s-right>")          'other-window)
