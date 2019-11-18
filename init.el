@@ -635,7 +635,9 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
             (add-hook 'before-save-hook 'gofmt-before-save)
             (set (make-local-variable 'company-backends) '(company-go))))
 
+
 (add-hook 'sh-mode-hook 'flycheck-mode)
+
 
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
