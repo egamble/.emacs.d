@@ -1,4 +1,11 @@
 ;; turn off emacs startup message
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (setq inhibit-startup-message t)
 
 ;; turn off menu bar
@@ -144,7 +151,8 @@
                      buffer-move
                      go-mode
                      company-go
-                     exec-path-from-shell))
+                     exec-path-from-shell
+                     flycheck))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
@@ -627,6 +635,7 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
             (add-hook 'before-save-hook 'gofmt-before-save)
             (set (make-local-variable 'company-backends) '(company-go))))
 
+(add-hook 'sh-mode-hook 'flycheck-mode)
 
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
