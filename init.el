@@ -634,6 +634,7 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
             (local-set-key (kbd "M-*") 'pop-tag-mark)
             (add-hook 'before-save-hook 'gofmt-before-save)
             (set (make-local-variable 'company-backends) '(company-go))))
+(add-hook 'go-mode-hook 'linum-mode)
 
 
 (add-hook 'sh-mode-hook 'flycheck-mode)
