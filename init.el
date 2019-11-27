@@ -152,7 +152,8 @@
                      go-mode
                      company-go
                      exec-path-from-shell
-                     flycheck))
+                     flycheck
+                     typescript-mode))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
@@ -609,6 +610,9 @@ Leave one space or none, according to the context."
 
 ;; Timeless S-expression files
 (add-to-list 'auto-mode-alist '("\\.tls\\'" . lisp-mode))
+
+;; TypeScript and TS with embedded JSX
+(add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
 
 
 (defun set-exec-path-from-shell-PATH ()
