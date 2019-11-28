@@ -251,8 +251,8 @@ Leave one space or none, according to the context."
              (dired-hide-details-mode)))
 
 
- (load-file "lang-inits/all-lisps.el")
- (load-file "lang-inits/other-langs.el")
+ (load-file "~/.emacs.d/lang-inits/all-lisps.el")
+ (load-file "~/.emacs.d/lang-inits/other-langs.el")
 
 
 (custom-set-faces
