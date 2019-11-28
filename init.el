@@ -651,7 +651,8 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
   (setq dired-use-ls-dired nil))
 (add-hook 'dired-mode-hook
           '(lambda ()
-             (define-key dired-mode-map [mouse-1] 'dired-find-file)))
+             (define-key dired-mode-map [mouse-1] 'dired-find-file)
+             (dired-hide-details-mode)))
 
 
 (custom-set-faces
