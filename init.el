@@ -647,6 +647,13 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
 (add-hook 'sh-mode-hook 'flycheck-mode)
 
 
+(when (string= system-type "darwin")       
+  (setq dired-use-ls-dired nil))
+(add-hook 'dired-mode-hook
+          '(lambda ()
+             (define-key dired-mode-map [mouse-1] 'dired-find-file)))
+
+
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
