@@ -325,7 +325,7 @@ it to the beginning of the line."
      "Window '%s' is normal")
    (current-buffer)))
 
-(global-set-key [f11] 'toggle-window-dedicated)
+(global-set-key [f9] 'toggle-window-dedicated)
 
 
 ;; display pretty lambdas
