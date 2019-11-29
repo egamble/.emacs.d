@@ -14,6 +14,7 @@
   "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(setq markdown-command "/usr/local/bin/markdown")
 
 
 ;; C-c C-f pretty prints a JSON buffer
