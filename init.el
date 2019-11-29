@@ -250,6 +250,7 @@ Leave one space or none, according to the context."
           '(lambda ()
              (define-key dired-mode-map [mouse-1] 'dired-find-file)
              (dired-hide-details-mode)))
+(setq dired-auto-revert-buffer t)
 
 
  (load-file "~/.emacs.d/lang-inits/all-lisps.el")
