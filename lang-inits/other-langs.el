@@ -65,3 +65,4 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
 
 (require 'prettier-js)
 (add-hook 'typescript-mode-hook 'prettier-js-mode)
+(add-hook 'typescript-mode-hook 'linum-mode)
