@@ -35,13 +35,6 @@
 (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
 
 
-(dolist (mode '(haskell markdown python go))
-  (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
-            (lambda ()
-              (fira-code-mode 1) ; Fira Code Symbol ligatures
-              )))
-
-
 (defun set-exec-path-from-shell-PATH ()
   "Set up Emacs' 'exec-path' and PATH environment variable to match that used by the user's shell.
 This is particularly useful under Mac OS X, where GUI apps are not started from a shell.
@@ -77,3 +70,10 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
 (require 'prettier-js)
 (add-hook 'typescript-mode-hook 'prettier-js-mode)
 (add-hook 'typescript-mode-hook 'linum-mode)
+
+
+(dolist (mode '(haskell markdown python go))
+  (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
+            (lambda ()
+              (fira-code-mode 1) ; Fira Code Symbol ligatures
+              )))

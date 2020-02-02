@@ -253,9 +253,9 @@ Leave one space or none, according to the context."
 (setq dired-auto-revert-buffer t)
 
 
+(load-file "~/.emacs.d/lang-inits/fira-code.el")
 (load-file "~/.emacs.d/lang-inits/all-lisps.el")
 (load-file "~/.emacs.d/lang-inits/other-langs.el")
-(load-file "~/.emacs.d/lang-inits/fira-code.el")
 
 
 (custom-set-faces
