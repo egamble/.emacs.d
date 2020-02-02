@@ -24,11 +24,21 @@
 ;; It's more likely that a .mm file is Objective-C than nroff.
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
 
+;; Timeless files
+(add-to-list 'auto-mode-alist '("\\.tl\\'" . haskell-mode))
+
 ;; Timeless S-expression files
 (add-to-list 'auto-mode-alist '("\\.tls\\'" . lisp-mode))
 
 ;; TypeScript and TS with embedded JSX
 (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
+
+
+(dolist (mode '(haskell markdown python go))
+  (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
+            (lambda ()
+              (fira-code-mode 1) ; Fira Code Symbol ligatures
+              )))
 
 
 (defun set-exec-path-from-shell-PATH ()
