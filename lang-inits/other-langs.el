@@ -14,6 +14,7 @@
   "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(setq markdown-command "/usr/local/bin/markdown")
 
 
 ;; C-c C-f pretty prints a JSON buffer
@@ -71,3 +72,8 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
 
 
 (add-hook 'sh-mode-hook 'flycheck-mode)
+
+
+(require 'prettier-js)
+(add-hook 'typescript-mode-hook 'prettier-js-mode)
+(add-hook 'typescript-mode-hook 'linum-mode)

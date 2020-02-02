@@ -1,4 +1,6 @@
 ;; turn off emacs startup message
+(setq inhibit-startup-message t)
+
 
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
@@ -6,7 +8,34 @@
 ;; You may delete these explanatory comments.
 (package-initialize)
 
-(setq inhibit-startup-message t)
+(let (refreshed)
+  (dolist (package '(paredit
+                     clojure-mode
+                     cider
+                     company
+                     highlight-parentheses
+                     fold-dwim fold-dwim-org
+                     smex
+                     markdown-mode
+                     ace-jump-mode
+                     json-mode
+                     f ; projectile requires this, but doesn't always successfully load it
+                     projectile
+                     haskell-mode
+                     slime
+                     buffer-move
+                     go-mode
+                     company-go
+                     exec-path-from-shell
+                     flycheck
+                     typescript-mode
+                     prettier-js))
+    (unless (package-installed-p package)
+      (when (not refreshed)
+        (package-refresh-contents)
+        (setq refreshed t))
+      (package-install package))))
+
 
 ;; turn off menu bar
 (menu-bar-mode -1)
@@ -127,34 +156,6 @@
 (color-theme-wombat)
 
 
-(let (refreshed)
-  (dolist (package '(paredit
-                     clojure-mode
-                     cider
-                     company
-                     highlight-parentheses
-                     fold-dwim fold-dwim-org
-                     smex
-                     markdown-mode
-                     ace-jump-mode
-                     json-mode
-                     f ; projectile requires this, but doesn't always successfully load it
-                     projectile
-                     haskell-mode
-                     slime
-                     buffer-move
-                     go-mode
-                     company-go
-                     exec-path-from-shell
-                     flycheck
-                     typescript-mode))
-    (unless (package-installed-p package)
-      (when (not refreshed)
-        (package-refresh-contents)
-        (setq refreshed t))
-      (package-install package))))
-
-
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 
@@ -249,6 +250,7 @@ Leave one space or none, according to the context."
           '(lambda ()
              (define-key dired-mode-map [mouse-1] 'dired-find-file)
              (dired-hide-details-mode)))
+(setq dired-auto-revert-buffer t)
 
 
  (load-file "~/.emacs.d/lang-inits/all-lisps.el")
@@ -262,10 +264,3 @@ Leave one space or none, according to the context."
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
   '(default ((t (:height 140)))))
-
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(markdown-command "/usr/local/bin/markdown"))
