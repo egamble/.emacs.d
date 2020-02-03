@@ -57,7 +57,8 @@
               (local-set-key (kbd "<C-M-s-right>") 'forward-select-sexp)
               (local-set-key (kbd "<M-s-left>")    'backward-select-sexp)
               (local-set-key (kbd "<C-M-s-left>")  'backward-select-sexp)
-              (fira-code-mode 1) ; Fira Code Symbol ligatures
+              (when auto-fira-code-mode
+                (fira-code-mode 1)) ; Fira Code Symbol ligatures
 )))
 
 ;; rainbow parentheses

@@ -75,5 +75,6 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
 (dolist (mode '(haskell markdown python go))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
-              (fira-code-mode 1) ; Fira Code Symbol ligatures
+              (when auto-fira-code-mode
+                (fira-code-mode 1))     ; Fira Code Symbol ligatures
               )))
