@@ -66,7 +66,7 @@ Modified from sanityinc's answer to http://stackoverflow.com/questions/8606954/p
 (add-hook 'typescript-mode-hook 'linum-mode)
 
 
-(dolist (mode '(haskell markdown python go typescript))
+(dolist (mode '(haskell markdown python go typescript c c++))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
               (when auto-fira-code-mode
