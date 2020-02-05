@@ -25,12 +25,6 @@
 ;; It's more likely that a .mm file is Objective-C than nroff.
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
 
-;; Timeless files
-(add-to-list 'auto-mode-alist '("\\.tl\\'" . haskell-mode))
-
-;; Timeless S-expression files
-(add-to-list 'auto-mode-alist '("\\.tls\\'" . lisp-mode))
-
 ;; TypeScript and TS with embedded JSX
 (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
 
