@@ -254,7 +254,8 @@ Leave one space or none, according to the context."
 
 
 (load-file "~/.emacs.d/lang-inits/fira-code.el")
-(setq auto-fira-code-mode nil)
+(global-fira-code-mode -1)
+
 
 (load-file "~/.emacs.d/lang-inits/all-lisps.el")
 (load-file "~/.emacs.d/lang-inits/timeless.el")

@@ -56,3 +56,6 @@
   (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol"))
 
 (provide 'fira-code-mode)
+
+(define-globalized-minor-mode global-fira-code-mode fira-code-mode
+  (lambda () (fira-code-mode 1)))

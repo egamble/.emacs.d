@@ -12,6 +12,8 @@
     ("infinity" . ?∞)))
 
 (defun timeless-mode--enable ()
+  (when fira-code-mode
+    (fira-code-mode -1))
   (fira-code-mode 1)
   (setq-local prettify-symbols-alist (append timeless-mode--ligatures prettify-symbols-alist))
   (prettify-symbols-mode -1)
