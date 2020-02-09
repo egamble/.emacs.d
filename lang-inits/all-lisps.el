@@ -87,24 +87,6 @@
 (add-hook 'clojure-mode-hook 'tweak-clojure-coloring)
 
 
-;; display pretty lambdas
-(font-lock-add-keywords 'emacs-lisp-mode
-    '(("(\\(lambda\\)\\>" (0 (prog1 ()
-                               (compose-region (match-beginning 1)
-                                               (match-end 1)
-                                               ?λ))))))
-
-;; display clojure 'fn' as a pretty lambda
-(defun clj-pretty-fn ()
-  (font-lock-add-keywords nil `(("(\\(\\<fn\\>\\)"
-                                 (0 (progn (compose-region (match-beginning 1)
-                                                           (match-end 1)
-                                                           ?λ
-                                                           'decompose-region)))))))
-(add-hook 'clojure-mode-hook 'clj-pretty-fn)
-(add-hook 'cider-repl-mode-hook 'clj-pretty-fn)
-
-
 (defvar repl-ns nil)
 
 (defun cider-save-load-switch-to-repl-set-ns ()

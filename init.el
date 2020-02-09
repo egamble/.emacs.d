@@ -254,12 +254,19 @@ Leave one space or none, according to the context."
 
 
 (load-file "~/.emacs.d/lang-inits/fira-code.el")
-(global-fira-code-mode -1)
+(dolist (mode '(emacs-lisp))
+  (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
+            (lambda ()
+              (fira-code))))
 
 
 (load-file "~/.emacs.d/lang-inits/all-lisps.el")
-(load-file "~/.emacs.d/lang-inits/timeless.el")
 (load-file "~/.emacs.d/lang-inits/other-langs.el")
+;; (load-file "~/.emacs.d/lang-inits/timeless.el")
+
+
+;; provides pretty lambda, etc.
+(global-prettify-symbols-mode 1)
 
 
 (custom-set-faces
@@ -267,4 +274,4 @@ Leave one space or none, according to the context."
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
-  '(default ((t (:height 140)))))
+  '(default ((t (:height 150)))))
