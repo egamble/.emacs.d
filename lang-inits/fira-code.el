@@ -1,4 +1,4 @@
-(defconst fira-code-regexs
+(defconst fira-code-mode--regexs
   '((#Xe100 "www"       "\\(www\\)")
     ;; removed all symbols with asterisks except #Xe16f because they don't play well together
     ;; (#Xe101 "**")
@@ -7,7 +7,7 @@
     ;; (#Xe104 "*>")
     ;; (#Xe105 "*/")
     (#Xe106 "\\\\"      "\\(\\\\\\\\\\)")
-    ;; removed #Xe107 because grouping long strings of backslashes in pairs is more useful than triples
+    ;; removed #Xe107 because grouping long strings of backslashes in pairs looks better than triples
     ;; (#Xe107 "\\\\\\")
     (#Xe108 "{-"        "\\({-\\)")
     (#Xe109 "[]"        "\\(\\[\\]\\)")
@@ -51,7 +51,8 @@
     (#Xe12d "/=="       "\\(/==\\)")
     (#Xe12e "/>"        "\\(/>\\)")
     (#Xe12f "//"        "\\(//\\)")
-    (#Xe130 "///"       "\\(///\\)")
+    ;; removed #Xe130 because grouping long strings of forward slashes in pairs looks better than triples
+    ;; (#Xe130 "///")
     (#Xe131 "&&"        "\\(&&\\)")
     (#Xe132 "||"        "\\(||\\)")
     (#Xe133 "||="       "\\(||=\\)")
@@ -123,19 +124,43 @@
     (#Xe16d "+"         "[^\\+<>]\\(\\+\\)[^\\+<>]")
     (#Xe16f "*"         "\\(\\*\\)")))
 
-(defun fira-code--pad-codepoint (codepoint)
+(defun fira-code-mode--pad-codepoint (codepoint)
   (concat "\t" (char-to-string codepoint)))
 
-(defun fira-code--build-keyword (entry)
+(defun fira-code-mode--build-keyword (entry)
   (let ((codepoint (first entry))
         (regex (third entry)))
     `(,regex (0 (prog1 nil
                   (compose-region (match-beginning 1)
                                   (match-end 1)
-                                  ,(fira-code--pad-codepoint codepoint)))))))
+                                  ,(fira-code-mode--pad-codepoint codepoint)))))))
 
-(defun fira-code ()
-  (let ((keywords (mapcar #'fira-code--build-keyword fira-code-regexs)))
-    (font-lock-add-keywords nil keywords))
+(defun fira-code-mode--build-keywords (regexs)
+  (mapcar #'fira-code-mode--build-keyword regexs))
 
-(set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol"))
+(defvar fira-code-mode--old-font-lock-keywords)
+
+(defun fira-code-mode--enable ()
+  (setq-local fira-code-mode--old-font-lock-keywords font-lock-keywords)
+  (setq-local font-lock-keywords
+              (append font-lock-keywords
+                      (fira-code-mode--build-keywords fira-code-mode--regexs))))
+
+(defun fira-code-mode--disable ()
+  (setq-local font-lock-keywords fira-code-mode--old-font-lock-keywords))
+
+(define-minor-mode fira-code-mode
+  "Fira Code ligatures minor mode"
+  :lighter " Fira-Code"
+  (if fira-code-mode
+      (fira-code-mode--enable)
+    (fira-code-mode--disable)))
+
+(defun fira-code-mode--setup ()
+  "Set up Fira Code Symbols"
+  (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol"))
+
+(provide 'fira-code-mode)
+
+(define-globalized-minor-mode global-fira-code-mode fira-code-mode
+  (lambda () (fira-code-mode 1)))

@@ -253,20 +253,16 @@ Leave one space or none, according to the context."
 (setq dired-auto-revert-buffer t)
 
 
-(load-file "~/.emacs.d/lang-inits/fira-code.el")
-(dolist (mode '(emacs-lisp markdown typescript))
-  (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
-            (lambda ()
-              (fira-code))))
+;; provides pretty lambda, etc.
+(global-prettify-symbols-mode 1)
 
+
+(load-file "~/.emacs.d/lang-inits/fira-code.el")
+(global-fira-code-mode -1)
 
 (load-file "~/.emacs.d/lang-inits/all-lisps.el")
 (load-file "~/.emacs.d/lang-inits/other-langs.el")
-;; (load-file "~/.emacs.d/lang-inits/timeless.el")
-
-
-;; provides pretty lambda, etc.
-(global-prettify-symbols-mode 1)
+(load-file "~/.emacs.d/lang-inits/timeless.el")
 
 
 (custom-set-faces

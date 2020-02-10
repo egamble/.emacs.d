@@ -1,23 +1,28 @@
-(defconst timeless-mode--ligatures
-  '((" . " . ?∘)
-    ("<>" . ?∩)
-    ("><" . ?∪)
-    ("&&" . ?∧)
-    ("||" . ?∨)
-    ("!" . ?¬)
-    ("@" . ?∈)
-    ("!@". ?∉)
-    ("<<" . ?⊂)
-    (">>" . ?⊃)
-    ("infinity" . ?∞)))
+(require 'fira-code-mode)
+
+(defconst timeless-mode--regexs
+  '((?∘ " . "      "\\( \\. \\)")
+    (?∩ "<>"       "\\(<>\\)")
+    (?∪ "><"       "\\(><\\)")
+    (?∧ "&&"       "\\(&&\\)")
+    (?∨ "||"       "\\(||\\)")
+    (?¬ "!"        "\\(!\\)")
+    (?∈ "@"        "\\(@\\)")
+    (?∉ "!@"       "\\(!@\\)")
+    (?⊂ "<<"       "\\(<<\\)")
+    (?⊃ ">>"       "\\(>>\\)")
+    (?∞ "infinity" "\\(infinity\\)")))
+
+(defvar timeless-mode--old-font-lock-keywords)
 
 (defun timeless-mode--enable ()
   (when fira-code-mode
     (fira-code-mode -1))
   (fira-code-mode 1)
-  (setq-local prettify-symbols-alist (append timeless-mode--ligatures prettify-symbols-alist))
-  (prettify-symbols-mode -1)
-  (prettify-symbols-mode 1))
+  (setq-local timeless-mode--old-font-lock-keywords font-lock-keywords)
+  (setq-local font-lock-keywords
+              (append font-lock-keywords
+                      (fira-code-mode--build-keywords timeless-mode--regexs))))
 
 (defun timeless-mode--disable ()
   (fira-code-mode -1))
