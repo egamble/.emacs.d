@@ -254,7 +254,7 @@ Leave one space or none, according to the context."
 
 
 (load-file "~/.emacs.d/lang-inits/fira-code.el")
-(dolist (mode '(emacs-lisp))
+(dolist (mode '(emacs-lisp markdown))
   (add-hook (first (read-from-string (concat (symbol-name mode) "-mode-hook")))
             (lambda ()
               (fira-code))))
