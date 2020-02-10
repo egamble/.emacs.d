@@ -1,15 +1,13 @@
-;; from: https://github.com/ekaschalk/.spacemacs.d/blob/master/layers/display/local/pretty-fonts/pretty-fonts.el
-
 (defconst fira-code-regexs
-  '(
-    (#Xe100 "www"       "\\(www\\)")
+  '((#Xe100 "www"       "\\(www\\)")
+    ;; removed all symbols with asterisks except #Xe16f because they don't play well together
     ;; (#Xe101 "**")
     ;; (#Xe102 "***")
     ;; (#Xe103 "**/")
     ;; (#Xe104 "*>")
     ;; (#Xe105 "*/")
     (#Xe106 "\\\\"      "\\(\\\\\\\\\\)")
-    ;; removed e107 because grouping long strings of backslashes in pairs is more useful than triples
+    ;; removed #Xe107 because grouping long strings of backslashes in pairs is more useful than triples
     ;; (#Xe107 "\\\\\\")
     (#Xe108 "{-"        "\\({-\\)")
     (#Xe109 "[]"        "\\(\\[\\]\\)")
@@ -123,8 +121,7 @@
     (#Xe16c ":"         "[^:=]\\(:\\)[^:=]")
     (#Xe16d "+"         "^\\(\\+\\)[^\\+<>]")
     (#Xe16d "+"         "[^\\+<>]\\(\\+\\)[^\\+<>]")
-    (#Xe16f "*"         "\\(\\*\\)")
-    ))
+    (#Xe16f "*"         "\\(\\*\\)")))
 
 (defun fira-code--pad-codepoint (codepoint)
   (concat "\t" (char-to-string codepoint)))
