@@ -257,17 +257,7 @@ Leave one space or none, according to the context."
 (global-prettify-symbols-mode 1)
 
 
-;; (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")
-;; (prettify-symbols-mode -1)
-;; (setq-local prettify-symbols-unprettify-at-point 'right-edge)
-;; (setq-local prettify-symbols-alist
-;;             (append (list
-;;                      (list "->" ?\s '(Br . Bl) ?\s '(Br . Br) (decode-char 'ucs #Xe114))
-;;                      (list "-->" ?\s '(Br . Bl) ?\s '(Br . Bl) ?\s '(Br . Br) (decode-char 'ucs #Xe113))) prettify-symbols-alist))
-;; (prettify-symbols-mode 1)
-
-
-;; (load-file "~/.emacs.d/lang-inits/fira-code.el")
+(load-file "~/.emacs.d/lang-inits/fira-code.el")
 ;; (global-fira-code-mode -1)
 
 
