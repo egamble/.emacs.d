@@ -259,6 +259,7 @@ Leave one space or none, according to the context."
 
 (load-file "~/.emacs.d/lang-inits/fira-code.el")
 (global-fira-code-mode -1)
+(global-set-key [f6] 'fira-code-mode)
 
 
 (load-file "~/.emacs.d/lang-inits/all-lisps.el")
