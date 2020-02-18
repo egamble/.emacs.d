@@ -1,21 +1,18 @@
 (defun fira-code-mode--make-alist (pairs)
   "Generate prettify-symbols alist from PAIRS."
   (mapcan
-   (lambda (p)
-     (let ((code (first p))
-           (str (second p))
-           (replace (third p)))
-       (if replace
-           (list (cons str replace))
-         (let* ((width (string-width str))
-                (prefix ())
-                (suffix '(?\s (Br . Br)))
-                (n 1))
-           (while (< n width)
-             (setq prefix (append prefix '(?\s (Br . Bl))))
-             (setq n (1+ n)))
-           (list
-            (cons str (append prefix suffix (list (decode-char 'ucs code)))))))))
+   (lambda (pair)
+     (let* ((code (first pair))
+            (str (second pair))
+            (width (string-width str))
+            (prefix ())
+            (suffix '(?\s (Br . Br)))
+            (n 1))
+       (while (< n width)
+         (setq prefix (append prefix '(?\s (Br . Bl))))
+         (setq n (1+ n)))
+       (list
+        (cons str (append prefix suffix (list (decode-char 'ucs code)))))))
    pairs))
 
 (defconst fira-code-mode--ligatures
