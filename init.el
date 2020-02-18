@@ -90,7 +90,8 @@
      nil 'fullscreen
      (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
 
-(global-set-key (kbd "M-RET") 'toggle-fullscreen)
+(global-set-key (kbd "<M-return>") 'toggle-fullscreen)
+(global-set-key (kbd "<s-return>") 'toggle-fullscreen)
 
 
 (if (eq system-type 'darwin)
