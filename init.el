@@ -92,6 +92,7 @@
 
 (global-set-key (kbd "<M-return>") 'toggle-fullscreen)
 (global-set-key (kbd "<s-return>") 'toggle-fullscreen)
+(global-set-key (kbd "<M-s-return>") 'toggle-fullscreen)
 
 
 (if (eq system-type 'darwin)
