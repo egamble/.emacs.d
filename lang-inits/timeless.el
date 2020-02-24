@@ -40,3 +40,7 @@
 
 ;; Timeless S-expression files
 (add-to-list 'auto-mode-alist '("\\.tls\\'" . lisp-mode))
+
+(global-set-key [f5] '(lambda ()
+                        (interactive)
+                        (insert ?⊥)))
