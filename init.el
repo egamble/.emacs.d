@@ -1,11 +1,6 @@
 ;; turn off emacs startup message
 (setq inhibit-startup-message t)
 
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
 (package-initialize)
 
 (let (refreshed)
@@ -58,6 +53,7 @@
 
 ;; show column numbers
 (setq column-number-mode t)
+(setq column-number-indicator-zero-based nil)
 
 ;; turn off scroll bars
 (if (fboundp 'scroll-bar-mode)
@@ -153,6 +149,7 @@
 (require 'color-theme)
 (color-theme-initialize)
 (setq color-theme-is-global t)
+
 ;; use wombat
 (load-file "~/.emacs.d/color-theme/themes/wombat.el")
 (color-theme-wombat)
