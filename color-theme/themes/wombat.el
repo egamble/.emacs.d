@@ -76,7 +76,6 @@
      (font-lock-preprocessor-face ((t (:foreground ,wombat-red-1))))
      (font-lock-regexp-grouping-backslash ((t (:bold t :weight bold))))
      (font-lock-regexp-grouping-construct ((t (:bold t :foreground ,wombat-green))))
-     (font-lock-regexp-grouping-construct ((t (:bold t ,wombat-green))))
      (font-lock-string-face ((t (:italic t :foreground ,wombat-green))))
      (font-lock-type-face ((t (:foreground ,wombat-green+1))))
      (font-lock-variable-name-face ((t (:foreground ,wombat-blue))))

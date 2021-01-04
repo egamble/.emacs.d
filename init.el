@@ -1,6 +1,8 @@
 ;; turn off emacs startup message
 (setq inhibit-startup-message t)
 
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 (let (refreshed)
