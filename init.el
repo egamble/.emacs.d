@@ -24,7 +24,8 @@
                      exec-path-from-shell
                      flycheck
                      typescript-mode
-                     prettier-js))
+                     prettier-js
+                     tide))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
