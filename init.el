@@ -16,8 +16,6 @@
                      markdown-mode
                      ace-jump-mode
                      json-mode
-                     f ; projectile requires this, but doesn't always successfully load it
-                     projectile
                      haskell-mode
                      slime
                      buffer-move
