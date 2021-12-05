@@ -1,6 +1,9 @@
 ;; turn off emacs startup message
 (setq inhibit-startup-message t)
 
+;; suppress warning that package cl is deprecated
+(setq byte-compile-warnings '(cl-functions))
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -16,6 +19,7 @@
                      markdown-mode
                      ace-jump-mode
                      json-mode
+                     haskell-mode
                      slime
                      buffer-move
                      go-mode
