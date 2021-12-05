@@ -16,7 +16,6 @@
                      markdown-mode
                      ace-jump-mode
                      json-mode
-                     haskell-mode
                      slime
                      buffer-move
                      go-mode
