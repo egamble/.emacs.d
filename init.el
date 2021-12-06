@@ -269,10 +269,17 @@ Leave one space or none, according to the context."
 (load-file "~/.emacs.d/lang-inits/timeless.el")
 (load-file "~/.emacs.d/lang-inits/other-langs.el")
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(tide prettier-js typescript-mode flycheck exec-path-from-shell company-go go-mode buffer-move slime haskell-mode json-mode ace-jump-mode markdown-mode smex fold-dwim-org fold-dwim highlight-parentheses company cider clojure-mode paredit)))
 
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  '(default ((t (:height 140)))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:height 140)))))
