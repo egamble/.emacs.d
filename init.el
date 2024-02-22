@@ -27,7 +27,8 @@
                      flycheck
                      typescript-mode
                      prettier-js
-                     tide))
+                     tide
+                     rust-mode))
     (unless (package-installed-p package)
       (when (not refreshed)
         (package-refresh-contents)
