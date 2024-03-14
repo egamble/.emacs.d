@@ -52,8 +52,10 @@
 (server-start)
 
 ;; tab width as two, using spaces
-(setq-default tab-width 2)
 (setq-default indent-tabs-mode nil)
+(setq default-tab-width 2)
+(setq-default tab-width 2)
+(setq rust-indent-offset 2)
 
 ;; show column numbers
 (setq column-number-mode t)
