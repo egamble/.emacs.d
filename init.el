@@ -52,7 +52,7 @@
 (server-start)
 
 ;; tab width as two, using spaces
-(setq default-tab-width 2)
+(setq-default tab-width 2)
 (setq-default indent-tabs-mode nil)
 
 ;; show column numbers
