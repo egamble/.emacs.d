@@ -1,4 +1,4 @@
-Emacs 27 is required for this init.el. I'm using it on macOS 12 with emacs 27.2 from [emacsformacosx.com](http://emacsformacosx.com/).
+At least Emacs 27 is required for this init.el. I'm currently using it on macOS 14 with emacs 29.3 from [emacsformacosx.com](http://emacsformacosx.com/).
 
 ## Installation
 1. Back up `~/.emacs` and `~/.emacs.d` if there is anything you wish to keep, then remove both.
