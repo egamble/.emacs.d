@@ -43,9 +43,6 @@
 (if (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 
-;; make transparent if the window manager supports it
-(add-to-list 'default-frame-alist '(alpha 85 75))
-
 (setq frame-title-format '("%f"))
 
 ;; allow emacsclient to open files in a running emacs
@@ -264,7 +261,7 @@ Leave one space or none, according to the context."
 
 (load-file "~/.emacs.d/lang-inits/fira-code.el")
 (global-set-key [f6] 'fira-code-mode)
-(global-fira-code-mode -1) ; a positive argument enables fira-code-mode everywhere
+(global-fira-code-mode 1) ; a positive argument enables fira-code-mode everywhere; set to -1 to disable
 
 
 (load-file "~/.emacs.d/lang-inits/all-lisps.el")
@@ -284,4 +281,4 @@ Leave one space or none, according to the context."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 150)))))
+ '(default ((t (:height 160)))))
